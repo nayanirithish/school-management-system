@@ -12,6 +12,7 @@
     "expo-blur": "~56.0.3",
     "expo-document-picker": "~56.0.4",
     "expo-linear-gradient": "~56.0.4",
+    "expo-linking": "^56.0.14",
     "expo-status-bar": "~56.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",

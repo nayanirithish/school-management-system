@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   mobileFrame: {
-    width: 414, // iPhone Pro Max width approx
-    height: '90%', // Leave some margin on top/bottom
-    maxHeight: 896,
+    width: 360, // Standard Android width
+    height: '92%', // Leave some margin on top/bottom
+    maxHeight: 850,
     borderRadius: 40,
     overflow: 'hidden',
     borderWidth: 12, // Simulate device bezel
