@@ -184,6 +184,7 @@ export default function AdminUploadResultsScreen({ navigation }: Props) {
       </Modal>
 
     </SafeAreaView>
+    </LinearGradient>
   );
 }
 

@@ -130,6 +130,7 @@ export default function AdminClassTeachersScreen({ navigation }: Props) {
       </Modal>
 
     </SafeAreaView>
+    </LinearGradient>
   );
 }
 

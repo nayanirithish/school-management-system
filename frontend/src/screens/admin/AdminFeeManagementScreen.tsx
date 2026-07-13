@@ -146,6 +146,7 @@ export default function AdminFeeManagementScreen({ navigation }: Props) {
       </View>
 
     </SafeAreaView>
+    </LinearGradient>
   );
 }
 

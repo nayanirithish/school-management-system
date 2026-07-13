@@ -185,6 +185,7 @@ export default function AdminFacultyManagementScreen({ navigation }: Props) {
       </Modal>
 
     </SafeAreaView>
+    </LinearGradient>
   );
 }
 

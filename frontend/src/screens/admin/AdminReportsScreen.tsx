@@ -123,6 +123,7 @@ export default function AdminReportsScreen({ navigation }: Props) {
         </View>
 
       </SafeAreaView>
+    </LinearGradient>
   );
 }
 

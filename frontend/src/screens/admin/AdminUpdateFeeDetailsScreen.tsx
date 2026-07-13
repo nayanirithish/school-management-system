@@ -354,6 +354,7 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
       </Modal>
 
     </SafeAreaView>
+    </LinearGradient>
   );
 }
 

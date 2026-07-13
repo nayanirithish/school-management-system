@@ -209,6 +209,7 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
       </View>
 
     </SafeAreaView>
+    </LinearGradient>
   );
 }
 

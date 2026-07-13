@@ -179,6 +179,7 @@ export default function AdminStudentManagementScreen({ navigation }: Props) {
       </Modal>
 
     </SafeAreaView>
+    </LinearGradient>
   );
 }
 

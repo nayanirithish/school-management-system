@@ -296,6 +296,7 @@ export default function AdminClassesScreen({ navigation }: Props) {
       )}
 
     </SafeAreaView>
+    </LinearGradient>
   );
 }
 
