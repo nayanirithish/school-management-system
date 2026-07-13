@@ -177,6 +177,7 @@ export default function AdminResultsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  background: { flex: 1 },
   safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
