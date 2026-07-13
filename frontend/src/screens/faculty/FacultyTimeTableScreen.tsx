@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -91,7 +92,7 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
            <View style={styles.periodBadge}>
               <Text style={styles.periodBadgeText}>{item.period}</Text>
            </View>
-           <BlurView intensity={70} tint="light" style={styles.classCard}>
+           <BlurView intensity={20} tint="dark" style={styles.classCard}>
               <Text style={styles.classTime}>{item.time}</Text>
               <Text style={styles.className}>{isTelugu ? item.classTE : item.className}</Text>
               <Text style={styles.classSubject}>{isTelugu ? item.subjectTE : item.subject}</Text>
@@ -104,14 +105,14 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
   const activeDayObj = days.find(d => d.id === activeDay);
 
   return (
-    <LinearGradient colors={['#FAFAFA', '#F3E8FF', '#E0F2FE']} style={styles.background}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
       <SafeAreaView style={styles.safeArea}>
         
         {/* Top App Bar */}
         <View style={styles.appBar}>
           <View style={styles.appBarLeft}>
              <TouchableOpacity onPress={() => navigation.goBack()} style={{marginRight: 12}}>
-                <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+                <MaterialCommunityIcons name="menu" size={24} color="#E0E7FF" />
              </TouchableOpacity>
              <Text style={styles.pageTitle}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
           </View>
@@ -122,14 +123,14 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
               activeOpacity={0.8}
             >
               <View style={[styles.languagePill, !isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>English</Text>
+                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>EN</Text>
               </View>
               <View style={[styles.languagePill, isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>Telugu</Text>
+                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>TE</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={{ marginLeft: 12 }}>
-              <MaterialCommunityIcons name="cog-outline" size={24} color="#6B7280" />
+              <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
         </View>
@@ -137,7 +138,7 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           
           {/* Main Tab Selector */}
-          <View style={styles.tabSelector}>
+          <BlurView intensity={20} tint="dark" style={styles.tabSelector}>
              <TouchableOpacity 
                style={[styles.tabButton, activeTab === 'My' && styles.tabButtonActive]} 
                onPress={() => setActiveTab('My')}
@@ -154,7 +155,7 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
                   {isTelugu ? 'పూర్తి టైమ్ టేబుల్' : 'Full Time Table'}
                 </Text>
              </TouchableOpacity>
-          </View>
+          </BlurView>
 
           {/* Render "My Time Table" View */}
           {activeTab === 'My' && (
@@ -181,7 +182,7 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
                 {renderScheduleList(scheduleData[activeDay] || [])}
                 {(!scheduleData[activeDay] || scheduleData[activeDay].length === 0) && (
                   <View style={styles.emptyState}>
-                    <MaterialCommunityIcons name="calendar-blank-outline" size={48} color="#D1D5DB" />
+                    <MaterialCommunityIcons name="calendar-blank-outline" size={48} color="#64748B" />
                     <Text style={styles.emptyStateText}>{isTelugu ? 'ఈ రోజు తరగతులు లేవు' : 'No classes scheduled for today'}</Text>
                   </View>
                 )}
@@ -193,9 +194,9 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
           {activeTab === 'Full' && (
             <View style={styles.fullTimeTableContainer}>
               {days.map(day => (
-                <View key={`full-${day.id}`} style={styles.fullDaySection}>
+                <BlurView intensity={20} tint="dark" key={`full-${day.id}`} style={styles.fullDaySection}>
                   <View style={styles.fullDayHeaderRow}>
-                    <MaterialCommunityIcons name="calendar-today" size={20} color="#5B4BCA" />
+                    <MaterialCommunityIcons name="calendar-today" size={20} color="#A855F7" />
                     <Text style={styles.fullDayHeaderTitle}>{isTelugu ? day.fullTE : day.fullEN}</Text>
                   </View>
                   <View style={styles.scheduleContainer}>
@@ -204,7 +205,7 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
                       <Text style={styles.emptyStateText}>{isTelugu ? 'తరగతులు లేవు' : 'No classes'}</Text>
                     )}
                   </View>
-                </View>
+                </BlurView>
               ))}
             </View>
           )}
@@ -213,21 +214,21 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
         </ScrollView>
 
         {/* Bottom Tab Bar */}
-        <BlurView intensity={90} tint="light" style={styles.bottomTabBar}>
+        <BlurView intensity={40} tint="dark" style={styles.bottomTabBar}>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyHome')}>
-            <MaterialCommunityIcons name="home-outline" size={28} color="#9CA3AF" />
+            <MaterialCommunityIcons name="home-outline" size={28} color="#94A3B8" />
             <Text style={styles.tabLabel}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem}>
-            <MaterialCommunityIcons name="calendar" size={28} color="#5B4BCA" />
-            <Text style={[styles.tabLabel, { color: '#5B4BCA' }]}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
+            <MaterialCommunityIcons name="calendar" size={28} color="#A855F7" />
+            <Text style={[styles.tabLabel, { color: '#A855F7' }]}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <MaterialCommunityIcons name="bell-outline" size={28} color="#9CA3AF" />
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyNotices')}>
+            <MaterialCommunityIcons name="bell-outline" size={28} color="#94A3B8" />
             <Text style={styles.tabLabel}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyProfile')}>
-            <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultySettings')}>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
             <Text style={styles.tabLabel}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
           </TouchableOpacity>
         </BlurView>
@@ -239,7 +240,7 @@ export default function FacultyTimeTableScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  safeArea: { flex: 1 },
   
   appBar: {
     flexDirection: 'row',
@@ -247,17 +248,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   appBarLeft: { flexDirection: 'row', alignItems: 'center' },
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827' },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC' },
   
   appBarRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 16,
     padding: 2,
     alignItems: 'center',
@@ -267,26 +266,21 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 14,
   },
-  languageActive: { backgroundColor: '#E0E7FF' },
+  languageActive: { backgroundColor: '#8B5CF6' },
   languageInactive: { backgroundColor: 'transparent' },
-  languageText: { fontSize: 11, fontWeight: 'bold', color: '#6B7280' },
-  languageTextActive: { color: '#5B4BCA' },
+  languageText: { fontSize: 11, fontWeight: 'bold', color: '#9CA3AF' },
+  languageTextActive: { color: '#F8FAFC' },
 
   scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
 
   tabSelector: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 4,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderColor: '#4F46E5',
+    overflow: 'hidden',
   },
   tabButton: {
     flex: 1,
@@ -314,18 +308,18 @@ const styles = StyleSheet.create({
   dayPill: {
     paddingVertical: 8,
     paddingHorizontal: 14,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: 12,
   },
   dayPillActive: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.8)',
     borderWidth: 1,
-    borderColor: '#5B4BCA',
-    shadowColor: '#5B4BCA',
+    borderColor: '#A855F7',
+    shadowColor: '#A855F7',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.6,
+    shadowRadius: 6,
+    elevation: 4,
   },
   dayText: {
     fontSize: 13,
@@ -333,14 +327,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   dayTextActive: {
-    color: '#5B4BCA',
+    color: '#D8B4FE',
     fontWeight: 'bold',
   },
 
   dateHeader: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 16,
   },
 
@@ -362,8 +356,8 @@ const styles = StyleSheet.create({
     marginRight: 16,
     shadowColor: '#5B4BCA',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     elevation: 4,
   },
   periodBadgeText: {
@@ -373,15 +367,11 @@ const styles = StyleSheet.create({
   },
   classCard: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.7)',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    borderColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
   },
   classTime: {
     fontSize: 12,
@@ -391,19 +381,19 @@ const styles = StyleSheet.create({
   className: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 2,
   },
   classSubject: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#CBD5E1',
   },
   breakRow: {
     alignItems: 'center',
     marginVertical: 12,
   },
   breakPill: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'rgba(255,255,255,0.05)',
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 16,
@@ -429,24 +419,24 @@ const styles = StyleSheet.create({
   },
   fullDaySection: {
     marginBottom: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
     borderRadius: 20,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#FFFFFF',
+    borderColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
   },
   fullDayHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
     paddingBottom: 12,
   },
   fullDayHeaderTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#5B4BCA',
+    color: '#D8B4FE',
     marginLeft: 8,
   },
 
@@ -456,8 +446,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.5)',
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderTopColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
     position: 'absolute',
     bottom: 0,
     width: '100%',

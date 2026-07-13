@@ -3,13 +3,14 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   TextInput,
   Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
@@ -68,7 +69,7 @@ export default function AdminCollectFeeScreen({ navigation }: Props) {
         {/* Top App Bar */}
         <GlassCard style={styles.appBar} intensity={isDark ? 40 : 80} styleOverride={{ borderRadius: 0, borderBottomWidth: 1, borderTopWidth: 0, borderLeftWidth: 0, borderRightWidth: 0 }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="arrow-left" size={28} color={isDark ? "#FFFFFF" : "#111827"} />
+            <MaterialCommunityIcons name="menu" size={28} color={isDark ? "#FFFFFF" : "#111827"} />
           </TouchableOpacity>
           <Text style={[styles.brandTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>Collect Class Fee</Text>
           <TouchableOpacity onPress={() => {}}>
@@ -261,7 +262,7 @@ export default function AdminCollectFeeScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, width: '100%' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#9CA3AF', marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 11, color: '#64748B', marginTop: 4, fontWeight: '500' },
 
   // Modals
   centerModalOverlay: {

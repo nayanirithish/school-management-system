@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -109,32 +110,26 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
   };
 
   return (
-    <LinearGradient colors={['#E0F2FE', '#F3E8FF', '#FAFAFA']} style={styles.background}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
       <SafeAreaView style={styles.safeArea}>
         
         {/* Top App Bar */}
         <View style={styles.appBar}>
-          <View style={styles.appBarLeft}>
-             <TouchableOpacity onPress={() => navigation.goBack()} style={{marginRight: 12}}>
-                <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
-             </TouchableOpacity>
-             <Text style={styles.pageTitle}>{isTelugu ? 'సిలబస్ పూర్తి' : 'Syllabus Covered'}</Text>
-          </View>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <MaterialCommunityIcons name="menu" size={24} color="#E0E7FF" />
+          </TouchableOpacity>
+          <Text style={styles.pageTitle}>{isTelugu ? 'సిలబస్ పూర్తి' : 'Syllabus Covered'}</Text>
           <View style={styles.appBarRight}>
-            <TouchableOpacity 
-              style={styles.languageToggle} 
-              onPress={() => setIsTelugu(!isTelugu)}
-              activeOpacity={0.8}
-            >
-              <View style={[styles.languagePill, !isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>English</Text>
-              </View>
-              <View style={[styles.languagePill, isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>Telugu</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={{ marginLeft: 12 }}>
-              <MaterialCommunityIcons name="cog-outline" size={24} color="#6B7280" />
+            <View style={styles.languageToggle}>
+              <TouchableOpacity onPress={() => setIsTelugu(false)} style={!isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={!isTelugu ? styles.langTextActive : styles.langTextInactive}>EN</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsTelugu(true)} style={isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>TE</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('FacultySettings')}>
+               <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
         </View>
@@ -145,28 +140,27 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
           <View style={{ zIndex: 10, marginBottom: 20 }}>
             <TouchableOpacity style={styles.dropdownToggle} activeOpacity={0.8} onPress={toggleDropdown}>
               <Text style={styles.dropdownToggleText}>{selectedClass}</Text>
-              <MaterialCommunityIcons name={isClassDropdownOpen ? "chevron-up" : "chevron-down"} size={24} color="#9CA3AF" />
+              <MaterialCommunityIcons name={isClassDropdownOpen ? "chevron-up" : "chevron-down"} size={24} color="#A78BFA" />
             </TouchableOpacity>
             {isClassDropdownOpen && (
-              <View style={styles.dropdownMenu}>
-                <ScrollView style={{maxHeight: 150}} nestedScrollEnabled>
+              <BlurView intensity={20} tint="dark" style={styles.dropdownMenu}>
+                <ScrollView style={{maxHeight: 200}} nestedScrollEnabled>
                   {classes.map((cls, index) => (
                     <TouchableOpacity key={index} style={styles.dropdownItem} onPress={() => handleSelectClass(cls)}>
                       <Text style={styles.dropdownItemText}>{cls}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
-              </View>
+              </BlurView>
             )}
           </View>
 
           {/* Glassmorphic Progress Card */}
-          <View style={styles.progressCard}>
-            <LinearGradient colors={['rgba(255,255,255,0.9)', 'rgba(255,255,255,0.6)']} style={[StyleSheet.absoluteFill as any, { borderRadius: 16 }]} />
+          <BlurView intensity={20} tint="dark" style={styles.progressCard}>
             <View style={styles.progressCardContent}>
               <View style={styles.circleContainer}>
                 {/* Simulated circular progress */}
-                <View style={[styles.outerCircle, { borderColor: coveragePercentage > 50 ? '#5B4BCA' : '#D1D5DB' }]}>
+                <View style={[styles.outerCircle, { borderColor: coveragePercentage > 50 ? '#5B4BCA' : 'rgba(255,255,255,0.1)' }]}>
                   <View style={styles.innerCircle}>
                     <Text style={styles.percentageText}>{coveragePercentage}%</Text>
                   </View>
@@ -178,14 +172,13 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
                 <Text style={styles.progressSubText}>({completedUnits} / {totalUnits} {isTelugu ? 'యూనిట్లు' : 'Units'})</Text>
               </View>
             </View>
-          </View>
+          </BlurView>
 
           {/* Syllabus Targets Module */}
           <Text style={styles.sectionTitle}>{isTelugu ? 'సిలబస్ లక్ష్యాలు' : 'Syllabus Targets'}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.targetsScroll} contentContainerStyle={styles.targetsContainer}>
             {targets.map((t, index) => (
-              <View key={t.id} style={styles.targetCard}>
-                <LinearGradient colors={['rgba(255,255,255,0.9)', 'rgba(255,255,255,0.7)']} style={[StyleSheet.absoluteFill as any, { borderRadius: 16 }]} />
+              <BlurView intensity={20} tint="dark" key={t.id} style={styles.targetCard}>
                 <Text style={styles.targetPeriod}>{isTelugu ? t.titleTE : t.titleEN}</Text>
                 
                 <View style={styles.targetProgressRow}>
@@ -202,7 +195,7 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
                     ? (isTelugu ? 'ట్రాక్‌లో ఉంది' : 'On Track') 
                     : (isTelugu ? 'వెనుకబడి ఉంది' : 'Behind Schedule')}
                 </Text>
-              </View>
+              </BlurView>
             ))}
           </ScrollView>
 
@@ -217,7 +210,6 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
                 onPress={() => openStatusModal(unit)}
                 activeOpacity={0.7}
               >
-                <LinearGradient colors={['rgba(255,255,255,0.7)', 'rgba(255,255,255,0.4)']} style={[StyleSheet.absoluteFill as any, { borderRadius: index === 0 ? 12 : (index === units.length -1 ? 12 : 0) }]} />
                 <View style={styles.unitRow}>
                    <Text style={styles.unitTitle}>{isTelugu ? unit.titleTE : unit.titleEN}</Text>
                    <Text style={[styles.unitStatus, { color: getStatusColor(unit.status) }]}>{getStatusText(unit.status)}</Text>
@@ -237,22 +229,22 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
         </ScrollView>
 
         {/* Bottom Tab Bar */}
-        <BlurView intensity={90} tint="light" style={styles.bottomTabBar}>
+        <BlurView intensity={40} tint="dark" style={styles.bottomTabBar}>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyHome')}>
-            <MaterialCommunityIcons name="home" size={28} color="#5B4BCA" />
-            <Text style={[styles.tabLabel, { color: '#5B4BCA' }]}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
+            <MaterialCommunityIcons name="home-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyTimeTable')}>
-            <MaterialCommunityIcons name="calendar-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Time Table</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyNotices')}>
-            <MaterialCommunityIcons name="bell-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
+            <MaterialCommunityIcons name="bell-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Notification</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyProfile')}>
-            <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultySettings')}>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Profile</Text>
           </TouchableOpacity>
         </BlurView>
 
@@ -260,7 +252,9 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
         {showStatusModal && (
            <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
              <View style={styles.bottomModalOverlay}>
-               <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+               <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowStatusModal(false)}>
+                 <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+               </TouchableOpacity>
                <View style={styles.bottomModalContent}>
                   <View style={styles.modalDragHandle} />
                   <Text style={styles.modalTitle}>
@@ -269,22 +263,22 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
                   <Text style={styles.modalSubtitle}>{selectedUnit ? (isTelugu ? selectedUnit.titleTE : selectedUnit.titleEN) : ''}</Text>
                   
                   <View style={styles.statusOptionsContainer}>
-                    <TouchableOpacity style={[styles.statusOptionBtn, { borderColor: '#10B981' }]} onPress={() => updateUnitStatus('Completed')}>
+                    <TouchableOpacity style={[styles.statusOptionBtn, { borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)' }]} onPress={() => updateUnitStatus('Completed')}>
                        <MaterialCommunityIcons name="check-circle" size={20} color="#10B981" />
                        <Text style={[styles.statusOptionText, { color: '#10B981' }]}>{isTelugu ? 'పూర్తయింది' : 'Completed'}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.statusOptionBtn, { borderColor: '#F59E0B' }]} onPress={() => updateUnitStatus('In Progress')}>
+                    <TouchableOpacity style={[styles.statusOptionBtn, { borderColor: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)' }]} onPress={() => updateUnitStatus('In Progress')}>
                        <MaterialCommunityIcons name="progress-clock" size={20} color="#F59E0B" />
                        <Text style={[styles.statusOptionText, { color: '#F59E0B' }]}>{isTelugu ? 'పురోగతిలో ఉంది' : 'In Progress'}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.statusOptionBtn, { borderColor: '#9CA3AF' }]} onPress={() => updateUnitStatus('Not Started')}>
+                    <TouchableOpacity style={[styles.statusOptionBtn, { borderColor: '#9CA3AF', backgroundColor: 'rgba(156, 163, 175, 0.1)' }]} onPress={() => updateUnitStatus('Not Started')}>
                        <MaterialCommunityIcons name="minus-circle" size={20} color="#9CA3AF" />
                        <Text style={[styles.statusOptionText, { color: '#9CA3AF' }]}>{isTelugu ? 'ప్రారంభించలేదు' : 'Not Started'}</Text>
                     </TouchableOpacity>
                   </View>
 
-                  <TouchableOpacity style={[styles.submitButton, { marginTop: 10 }]} onPress={() => setShowStatusModal(false)}>
-                     <Text style={styles.submitButtonText}>{isTelugu ? 'రద్దు చేయి' : 'Cancel'}</Text>
+                  <TouchableOpacity style={[styles.submitButton, { marginTop: 10, backgroundColor: 'rgba(255,255,255,0.1)' }]} onPress={() => setShowStatusModal(false)}>
+                     <Text style={[styles.submitButtonText, { color: '#F8FAFC' }]}>{isTelugu ? 'రద్దు చేయి' : 'Cancel'}</Text>
                   </TouchableOpacity>
                </View>
              </View>
@@ -295,13 +289,15 @@ export default function FacultySyllabusCoveredScreen({ navigation }: Props) {
         {showSuccessModal && (
           <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
             <View style={styles.centerModalOverlay}>
-               <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+               <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowSuccessModal(false)}>
+                 <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+               </TouchableOpacity>
                <View style={styles.centerModalContent}>
                   <View style={{alignItems: 'center', marginBottom: 16}}>
                      <MaterialCommunityIcons name="check-circle" size={60} color="#10B981" />
                   </View>
                   <Text style={styles.centerModalTitle}>{isTelugu ? 'నవీకరించబడింది!' : 'Updated!'}</Text>
-                  <Text style={{textAlign: 'center', color: '#6B7280', marginBottom: 24}}>
+                  <Text style={{textAlign: 'center', color: '#9CA3AF', marginBottom: 24}}>
                     {isTelugu ? 'సిలబస్ పురోగతి విజయవంతంగా నవీకరించబడింది.' : 'Syllabus progress has been successfully updated.'}
                   </Text>
                   <TouchableOpacity style={styles.submitButton} onPress={() => setShowSuccessModal(false)}>
@@ -324,83 +320,66 @@ const styles = StyleSheet.create({
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
-  appBarLeft: { flexDirection: 'row', alignItems: 'center' },
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827' },
-  
+  backButton: { marginRight: 16 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', flex: 1 },
   appBarRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 16,
+    height: 32,
+    alignItems: 'center',
     padding: 2,
+  },
+  languageActive: {
+    backgroundColor: '#8B5CF6',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    height: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  languagePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 14,
-  },
-  languageActive: { backgroundColor: '#E0E7FF' },
-  languageInactive: { backgroundColor: 'transparent' },
-  languageText: { fontSize: 11, fontWeight: 'bold', color: '#6B7280' },
-  languageTextActive: { color: '#5B4BCA' },
+  languageInactive: { paddingHorizontal: 10, justifyContent: 'center' },
+  langTextActive: { color: '#F8FAFC', fontSize: 11, fontWeight: 'bold' },
+  langTextInactive: { color: '#9CA3AF', fontSize: 11, fontWeight: '500' },
 
-  scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 20 },
 
   dropdownToggle: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    elevation: 2,
   },
   dropdownToggleText: {
     fontSize: 15,
-    color: '#111827',
+    color: '#F8FAFC',
   },
   dropdownMenu: {
-    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderTopWidth: 0,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    marginTop: -8,
-    paddingTop: 8,
+    borderColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 12,
+    marginTop: 4,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-    position: 'absolute',
-    top: 55,
-    left: 0,
-    right: 0,
   },
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F9FAFB',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   dropdownItemText: {
     fontSize: 15,
-    color: '#374151',
+    color: '#E2E8F0',
   },
 
   progressCard: {
@@ -408,12 +387,7 @@ const styles = StyleSheet.create({
     padding: 24,
     marginBottom: 30,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.8)',
-    shadowColor: '#5B4BCA',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 15,
-    elevation: 5,
+    borderColor: 'rgba(255,255,255,0.1)',
     overflow: 'hidden',
   },
   progressCardContent: {
@@ -430,72 +404,66 @@ const styles = StyleSheet.create({
     borderWidth: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
   },
   innerCircle: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#F3E8FF',
+    backgroundColor: 'rgba(91, 75, 202, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   percentageText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#5B4BCA',
+    color: '#A78BFA',
   },
   progressTextContainer: {
     flex: 1,
   },
   progressTitle: {
     fontSize: 14,
-    color: '#4B5563',
+    color: '#9CA3AF',
     fontWeight: '600',
     marginBottom: 4,
   },
   progressMainText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 4,
   },
   progressSubText: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: '#64748B',
   },
 
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 16,
   },
   targetsScroll: {
-    marginHorizontal: -20,
+    marginHorizontal: -16,
     marginBottom: 24,
   },
   targetsContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 4, // for shadow
+    paddingHorizontal: 16,
   },
   targetCard: {
     width: 140,
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.8)',
-    shadowColor: '#5B4BCA',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
+    borderColor: 'rgba(255,255,255,0.1)',
     marginRight: 12,
   },
   targetPeriod: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: '#E2E8F0',
     marginBottom: 12,
   },
   targetProgressRow: {
@@ -506,21 +474,21 @@ const styles = StyleSheet.create({
   targetValueText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
   },
   targetSlash: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#64748B',
     marginHorizontal: 4,
   },
   targetGoalText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#9CA3AF',
   },
   targetProgressBarBg: {
     height: 6,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 3,
     marginBottom: 8,
     overflow: 'hidden',
@@ -533,26 +501,22 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
   },
+
   unitsContainer: {
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.7)',
+    borderColor: 'rgba(255,255,255,0.1)',
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   unitCard: {
     paddingVertical: 16,
     paddingHorizontal: 16,
-    overflow: 'hidden',
   },
   unitCardBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   unitRow: {
     flexDirection: 'row',
@@ -561,7 +525,7 @@ const styles = StyleSheet.create({
   },
   unitTitle: {
     fontSize: 15,
-    color: '#374151',
+    color: '#E2E8F0',
     flex: 1,
   },
   unitStatus: {
@@ -576,16 +540,14 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: '#5B4BCA',
-    borderRadius: 12,
-    paddingVertical: 14,
+    borderRadius: 16,
+    paddingVertical: 16,
     paddingHorizontal: 32,
     width: '100%',
-    maxWidth: 300,
     alignItems: 'center',
-    alignSelf: 'center',
     shadowColor: '#5B4BCA',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -595,44 +557,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  bottomTabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.5)',
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
+  bottomTabBar: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', position: 'absolute', bottom: 0, width: '100%' },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#9CA3AF', marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 11, color: '#94A3B8', marginTop: 4, fontWeight: '500' },
 
   bottomModalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
   },
   bottomModalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#1E293B',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
     paddingBottom: 40,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 20,
     width: '100%',
     maxWidth: 480,
+    borderTopWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   modalDragHandle: {
     width: 40,
     height: 4,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 2,
     alignSelf: 'center',
     marginBottom: 20,
@@ -640,13 +589,13 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 4,
     textAlign: 'center',
   },
   modalSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#9CA3AF',
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -661,7 +610,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     marginBottom: 12,
-    backgroundColor: '#FAFAFA',
   },
   statusOptionText: {
     fontSize: 16,
@@ -674,23 +622,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: 'rgba(0,0,0,0.7)',
   },
   centerModalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#1E293B',
     borderRadius: 24,
     padding: 24,
     width: '100%',
     maxWidth: 340,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 10,
+    borderWidth: 1,
+    borderColor: '#5B4BCA',
   },
   centerModalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 12,
     textAlign: 'center',
   },

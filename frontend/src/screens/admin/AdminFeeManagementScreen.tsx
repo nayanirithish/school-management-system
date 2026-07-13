@@ -3,11 +3,13 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
@@ -28,12 +30,13 @@ export default function AdminFeeManagementScreen({ navigation }: Props) {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
         <View style={styles.appBarRight}>
@@ -77,7 +80,7 @@ export default function AdminFeeManagementScreen({ navigation }: Props) {
               </View>
               <View style={styles.statBox}>
                  <Text style={styles.statLabel}>Total Students</Text>
-                 <Text style={[styles.statValue, { color: '#111827' }]}>1,248</Text>
+                 <Text style={[styles.statValue, { color: '#F8FAFC' }]}>1,248</Text>
               </View>
            </View>
         </View>
@@ -147,14 +150,14 @@ export default function AdminFeeManagementScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -183,10 +186,10 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 20 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 20 },
 
   overviewCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 20,
     padding: 20,
     marginBottom: 24,
@@ -198,21 +201,21 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  overviewTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  overviewTitle: { fontSize: 16, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
   statBox: { flex: 1 },
-  statLabel: { fontSize: 13, color: '#6B7280', marginBottom: 4 },
+  statLabel: { fontSize: 13, color: '#64748B', marginBottom: 4 },
   statValue: { fontSize: 18, fontWeight: 'bold' },
 
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827' },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#F8FAFC' },
   viewAllText: { fontSize: 14, fontWeight: 'bold', color: '#4F46E5' },
 
   listContainer: { paddingBottom: 20 },
   transactionCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
     borderColor: '#F3F4F6',
     borderRadius: 16,
@@ -225,12 +228,12 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   transactionLeft: { justifyContent: 'center' },
-  studentName: { fontSize: 15, fontWeight: 'bold', color: '#111827', marginBottom: 4 },
-  studentClass: { fontSize: 13, color: '#6B7280' },
+  studentName: { fontSize: 15, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 4 },
+  studentClass: { fontSize: 13, color: '#64748B' },
   transactionRight: { alignItems: 'flex-end' },
-  transactionAmount: { fontSize: 15, fontWeight: 'bold', color: '#111827', marginBottom: 2 },
+  transactionAmount: { fontSize: 15, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 2 },
   transactionStatus: { fontSize: 12, fontWeight: 'bold', marginBottom: 2 },
-  transactionDate: { fontSize: 11, color: '#9CA3AF' },
+  transactionDate: { fontSize: 11, color: '#64748B' },
 
   fabContainer: { position: 'absolute', bottom: 80, left: 16, right: 16 },
   fabButton: { 
@@ -253,7 +256,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
     position: 'absolute',
@@ -261,5 +264,5 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  tabLabel: { fontSize: 10, color: '#64748B', marginTop: 4, fontWeight: '500', textAlign: 'center' },
 });

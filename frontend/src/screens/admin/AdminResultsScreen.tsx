@@ -3,11 +3,13 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
@@ -36,12 +38,13 @@ export default function AdminResultsScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
         <View style={styles.appBarRight}>
@@ -116,7 +119,7 @@ export default function AdminResultsScreen({ navigation }: Props) {
               <Text style={styles.gradeCount}>412</Text>
            </View>
            <View style={styles.gradeBox}>
-              <Text style={[styles.gradeLabel, { color: '#6B7280' }]}>C</Text>
+              <Text style={[styles.gradeLabel, { color: '#64748B' }]}>C</Text>
               <Text style={styles.gradeCount}>156</Text>
            </View>
         </View>
@@ -136,7 +139,7 @@ export default function AdminResultsScreen({ navigation }: Props) {
                      <View style={[styles.classProgressBarFill, { width: `${cls.passPercentage}%`, backgroundColor: color }]} />
                   </View>
                   <View style={styles.classResultStats}>
-                     <Text style={styles.classResultStatText}>Total: <Text style={{fontWeight: 'bold', color: '#111827'}}>{cls.total}</Text></Text>
+                     <Text style={styles.classResultStatText}>Total: <Text style={{fontWeight: 'bold', color: '#F8FAFC'}}>{cls.total}</Text></Text>
                      <Text style={styles.classResultStatText}>Passed: <Text style={{fontWeight: 'bold', color: '#10B981'}}>{cls.passed}</Text></Text>
                      <Text style={styles.classResultStatText}>Failed: <Text style={{fontWeight: 'bold', color: '#EF4444'}}>{cls.failed}</Text></Text>
                   </View>
@@ -173,14 +176,14 @@ export default function AdminResultsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -209,7 +212,7 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
 
   overallCard: {
     backgroundColor: '#4F46E5',
@@ -228,40 +231,40 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 24,
   },
   progressCircleText: { fontSize: 24, fontWeight: '900', color: '#4F46E5' },
-  progressCircleLabel: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
+  progressCircleLabel: { fontSize: 12, color: '#64748B', fontWeight: '500' },
   overallStats: { flex: 1 },
   overallStatRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   overallStatLabel: { fontSize: 13, color: 'rgba(255,255,255,0.8)' },
   overallStatValue: { fontSize: 13, fontWeight: 'bold', color: '#FFFFFF' },
 
   progressBarContainer: { height: 6, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 3, marginBottom: 8 },
-  progressBarFill: { height: 6, backgroundColor: '#FFFFFF', borderRadius: 3 },
+  progressBarFill: { height: 6, backgroundColor: 'rgba(15, 23, 42, 0.5)', borderRadius: 3 },
   progressLabels: { flexDirection: 'row', justifyContent: 'space-between' },
   progressLabelText: { fontSize: 11, color: 'rgba(255,255,255,0.8)' },
 
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
   
   gradeGrid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
   gradeBox: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'transparent',
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
     marginHorizontal: 4,
   },
   gradeLabel: { fontSize: 18, fontWeight: '900', marginBottom: 4 },
-  gradeCount: { fontSize: 13, color: '#6B7280', fontWeight: '500' },
+  gradeCount: { fontSize: 13, color: '#64748B', fontWeight: '500' },
 
   listContainer: { paddingBottom: 20 },
   classResultCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 20,
     padding: 16,
     marginBottom: 16,
@@ -274,21 +277,21 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   classResultHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  className: { fontSize: 15, fontWeight: 'bold', color: '#111827' },
+  className: { fontSize: 15, fontWeight: 'bold', color: '#F8FAFC' },
   classPercentage: { fontSize: 15, fontWeight: 'bold' },
   
-  classProgressBarBg: { height: 6, backgroundColor: '#F3F4F6', borderRadius: 3, marginBottom: 12 },
+  classProgressBarBg: { height: 6, backgroundColor: 'transparent', borderRadius: 3, marginBottom: 12 },
   classProgressBarFill: { height: 6, borderRadius: 3 },
   
   classResultStats: { flexDirection: 'row' },
-  classResultStatText: { fontSize: 12, color: '#6B7280', marginRight: 16 },
+  classResultStatText: { fontSize: 12, color: '#64748B', marginRight: 16 },
 
   bottomTabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
     position: 'absolute',
@@ -296,5 +299,5 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  tabLabel: { fontSize: 10, color: '#64748B', marginTop: 4, fontWeight: '500', textAlign: 'center' },
 });

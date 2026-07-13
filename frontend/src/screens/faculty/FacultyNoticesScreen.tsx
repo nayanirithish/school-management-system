@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function FacultyNoticesScreen({ navigation }: Props) {
+  const insets = useSafeAreaInsets();
   const { isTelugu, setIsTelugu } = useLanguage();
   const [activeTab, setActiveTab] = useState<'All' | 'Department' | 'School'>('All');
 
@@ -32,7 +34,7 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
       type: 'Department', 
       isNew: true, 
       icon: 'account-group-outline', 
-      color: '#5B4BCA' 
+      color: '#A855F7' 
     },
     { 
       id: 2, 
@@ -54,7 +56,7 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
       type: 'School', 
       isNew: false, 
       icon: 'calendar-blank-outline', 
-      color: '#5B4BCA' 
+      color: '#A855F7' 
     },
     { 
       id: 4, 
@@ -65,21 +67,21 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
       type: 'Department', 
       isNew: false, 
       icon: 'monitor', 
-      color: '#6366F1' 
+      color: '#10B981' 
     },
   ];
 
   const filteredNotices = noticesData.filter(notice => activeTab === 'All' || notice.type === activeTab);
 
   return (
-    <LinearGradient colors={['#FAFAFA', '#F3E8FF', '#E0F2FE']} style={styles.background}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
       <SafeAreaView style={styles.safeArea}>
         
         {/* Top App Bar */}
         <View style={styles.appBar}>
           <View style={styles.appBarLeft}>
              <TouchableOpacity onPress={() => navigation.goBack()} style={{marginRight: 12}}>
-                <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+                <MaterialCommunityIcons name="menu" size={24} color="#E0E7FF" />
              </TouchableOpacity>
              <Text style={styles.pageTitle}>{isTelugu ? 'నోటీసులు' : 'Notices'}</Text>
           </View>
@@ -90,14 +92,14 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
               activeOpacity={0.8}
             >
               <View style={[styles.languagePill, !isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>English</Text>
+                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>EN</Text>
               </View>
               <View style={[styles.languagePill, isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>Telugu</Text>
+                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>TE</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={{ marginLeft: 12 }}>
-              <MaterialCommunityIcons name="cog-outline" size={24} color="#6B7280" />
+            <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('FacultySettings' as any)}>
+              <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
         </View>
@@ -122,9 +124,9 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
           {/* Notices List */}
           <View style={styles.noticesContainer}>
             {filteredNotices.map((notice) => (
-              <BlurView intensity={80} tint="light" style={styles.noticeCard} key={notice.id}>
+              <BlurView intensity={20} tint="dark" style={[styles.noticeCard, { borderColor: notice.color, shadowColor: notice.color, shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 }]} key={notice.id}>
                 <View style={styles.cardHeader}>
-                  <View style={[styles.iconContainer, { backgroundColor: notice.color + '1A' }]}>
+                  <View style={[styles.iconContainer, { backgroundColor: notice.color + '30' }]}>
                     <MaterialCommunityIcons name={notice.icon as any} size={24} color={notice.color} />
                   </View>
                   <View style={styles.headerTextInfo}>
@@ -145,7 +147,7 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
 
             {filteredNotices.length === 0 && (
               <View style={styles.emptyState}>
-                <MaterialCommunityIcons name="bell-off-outline" size={48} color="#D1D5DB" />
+                <MaterialCommunityIcons name="bell-off-outline" size={48} color="#64748B" />
                 <Text style={styles.emptyStateText}>{isTelugu ? 'నోటీసులు లేవు' : 'No notices found'}</Text>
               </View>
             )}
@@ -155,7 +157,7 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
         </ScrollView>
 
         {/* Floating Add Button */}
-        <View style={styles.fabContainer}>
+        <View style={[styles.fabContainer, { bottom: Math.max(insets.bottom, 12) + 70 }]}>
            <TouchableOpacity 
              style={styles.fabButton}
              onPress={() => navigation.navigate('FacultyAddNotice')}
@@ -166,22 +168,22 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
         </View>
 
         {/* Bottom Tab Bar */}
-        <BlurView intensity={90} tint="light" style={styles.bottomTabBar}>
+        <BlurView intensity={40} tint="dark" style={[styles.bottomTabBar, { borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', paddingBottom: Math.max(insets.bottom, 12) }]}>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyHome')}>
-            <MaterialCommunityIcons name="home-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
+            <MaterialCommunityIcons name="home-outline" size={28} color="#94A3B8" />
+            <Text style={[styles.tabLabel, { color: '#94A3B8' }]}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyTimeTable')}>
-            <MaterialCommunityIcons name="calendar-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={28} color="#94A3B8" />
+            <Text style={[styles.tabLabel, { color: '#94A3B8' }]}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem}>
-            <MaterialCommunityIcons name="bell" size={28} color="#5B4BCA" />
-            <Text style={[styles.tabLabel, { color: '#5B4BCA' }]}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
+            <MaterialCommunityIcons name="bell" size={28} color="#A855F7" />
+            <Text style={[styles.tabLabel, { color: '#A855F7' }]}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyProfile')}>
-            <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
+            <Text style={[styles.tabLabel, { color: '#94A3B8' }]}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
           </TouchableOpacity>
         </BlurView>
 
@@ -192,7 +194,7 @@ export default function FacultyNoticesScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  safeArea: { flex: 1 },
   
   appBar: {
     flexDirection: 'row',
@@ -200,30 +202,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'transparent',
   },
   appBarLeft: { flexDirection: 'row', alignItems: 'center' },
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827' },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#E0E7FF' },
   
   appBarRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
-    borderRadius: 16,
-    padding: 2,
-    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 20,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   languagePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
   },
-  languageActive: { backgroundColor: '#E0E7FF' },
+  languageActive: { backgroundColor: '#4F46E5' },
   languageInactive: { backgroundColor: 'transparent' },
-  languageText: { fontSize: 11, fontWeight: 'bold', color: '#6B7280' },
-  languageTextActive: { color: '#5B4BCA' },
+  languageText: { fontSize: 12, fontWeight: 'bold', color: '#94A3B8' },
+  languageTextActive: { color: '#FFFFFF' },
 
   scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
 
@@ -234,17 +235,20 @@ const styles = StyleSheet.create({
   tabPill: {
     paddingVertical: 8,
     paddingHorizontal: 20,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'rgba(15, 23, 42, 0.7)',
     borderRadius: 20,
     marginRight: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   tabPillActive: {
-    backgroundColor: '#5B4BCA',
+    backgroundColor: '#A855F7',
+    borderColor: '#C084FC',
   },
   tabPillText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#6B7280',
+    color: '#94A3B8',
   },
   tabPillTextActive: {
     color: '#FFFFFF',
@@ -255,16 +259,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   noticeCard: {
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: 'rgba(15, 23, 42, 0.7)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -286,27 +285,29 @@ const styles = StyleSheet.create({
   noticeTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F1F5F9',
     marginBottom: 2,
   },
   noticeDate: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: '#94A3B8',
   },
   newBadge: {
-    backgroundColor: '#10B981',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
   },
   newBadgeText: {
-    color: '#FFFFFF',
+    color: '#34D399',
     fontSize: 11,
     fontWeight: 'bold',
   },
   noticePreview: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#CBD5E1',
     lineHeight: 20,
   },
 
@@ -316,21 +317,21 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 15,
-    color: '#9CA3AF',
+    color: '#64748B',
     marginTop: 8,
   },
 
-  fabContainer: { position: 'absolute', bottom: 80, left: 16, right: 16 },
+  fabContainer: { position: 'absolute', left: 16, right: 16 },
   fabButton: { 
     flexDirection: 'row',
-    backgroundColor: '#5B4BCA', 
+    backgroundColor: '#A855F7', 
     borderRadius: 30, 
     paddingVertical: 14, 
     alignItems: 'center', 
     justifyContent: 'center',
-    shadowColor: '#5B4BCA', 
+    shadowColor: '#A855F7', 
     shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.3, 
+    shadowOpacity: 0.5, 
     shadowRadius: 8, 
     elevation: 4 
   },
@@ -340,14 +341,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.5)',
-    backgroundColor: 'rgba(255,255,255,0.7)',
     position: 'absolute',
     bottom: 0,
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#9CA3AF', marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 10, marginTop: 4, fontWeight: '500', textAlign: 'center' },
 });

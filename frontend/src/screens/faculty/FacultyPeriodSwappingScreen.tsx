@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, LayoutAnimation, UIManager, Platform, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, LayoutAnimation, UIManager, Platform, Modal } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -88,32 +89,26 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
   };
 
   return (
-    <LinearGradient colors={['#FAFAFA', '#F3E8FF', '#E0F2FE']} style={styles.background}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
       <SafeAreaView style={styles.safeArea}>
         
-        {/* Top App Bar */}
-        <View style={styles.appBar}>
-          <View style={styles.appBarLeft}>
-             <TouchableOpacity onPress={() => navigation.goBack()} style={{marginRight: 12}}>
-                <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
-             </TouchableOpacity>
-             <Text style={styles.pageTitle}>{isTelugu ? 'పీరియడ్ మార్పిడి' : 'Period Swapping'}</Text>
-          </View>
-          <View style={styles.appBarRight}>
-            <TouchableOpacity 
-              style={styles.languageToggle} 
-              onPress={() => setIsTelugu(!isTelugu)}
-              activeOpacity={0.8}
-            >
-              <View style={[styles.languagePill, !isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>English</Text>
-              </View>
-              <View style={[styles.languagePill, isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>Telugu</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={{ marginLeft: 12 }}>
-              <MaterialCommunityIcons name="cog-outline" size={24} color="#6B7280" />
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <MaterialCommunityIcons name="menu" size={24} color="#E0E7FF" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{isTelugu ? 'పీరియడ్ మార్పిడి' : 'Period Swapping'}</Text>
+          <View style={styles.headerRight}>
+            <View style={styles.languageToggle}>
+              <TouchableOpacity onPress={() => setIsTelugu(false)} style={!isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={!isTelugu ? styles.langTextActive : styles.langTextInactive}>EN</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsTelugu(true)} style={isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>TE</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('FacultySettings')}>
+               <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
         </View>
@@ -152,7 +147,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
                   <MaterialCommunityIcons name={openDropdown === 'from' ? "chevron-up" : "chevron-down"} size={24} color="#9CA3AF" />
                 </TouchableOpacity>
                 {openDropdown === 'from' && (
-                  <View style={styles.dropdownMenu}>
+                  <BlurView intensity={20} tint="dark" style={styles.dropdownMenu}>
                     <ScrollView style={{maxHeight: 150}} nestedScrollEnabled>
                       {periods.map((p, index) => (
                         <TouchableOpacity key={index} style={styles.dropdownItem} onPress={() => handleSelectDropdown('from', p)}>
@@ -160,7 +155,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
                         </TouchableOpacity>
                       ))}
                     </ScrollView>
-                  </View>
+                  </BlurView>
                 )}
                 <Text style={styles.helperText}>Class 10 - A</Text>
               </View>
@@ -173,7 +168,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
                   <MaterialCommunityIcons name={openDropdown === 'to' ? "chevron-up" : "chevron-down"} size={24} color="#9CA3AF" />
                 </TouchableOpacity>
                 {openDropdown === 'to' && (
-                  <View style={styles.dropdownMenu}>
+                  <BlurView intensity={20} tint="dark" style={styles.dropdownMenu}>
                     <ScrollView style={{maxHeight: 150}} nestedScrollEnabled>
                       {periods.map((p, index) => (
                         <TouchableOpacity key={index} style={styles.dropdownItem} onPress={() => handleSelectDropdown('to', p)}>
@@ -181,7 +176,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
                         </TouchableOpacity>
                       ))}
                     </ScrollView>
-                  </View>
+                  </BlurView>
                 )}
                 <Text style={styles.helperText}>Class 10 - B</Text>
               </View>
@@ -194,7 +189,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
                   <MaterialCommunityIcons name={openDropdown === 'faculty' ? "chevron-up" : "chevron-down"} size={24} color="#9CA3AF" />
                 </TouchableOpacity>
                 {openDropdown === 'faculty' && (
-                  <View style={styles.dropdownMenu}>
+                  <BlurView intensity={20} tint="dark" style={styles.dropdownMenu}>
                     <ScrollView style={{maxHeight: 150}} nestedScrollEnabled>
                       {faculties.map((f, index) => (
                         <TouchableOpacity key={index} style={styles.dropdownItem} onPress={() => handleSelectDropdown('faculty', f)}>
@@ -202,7 +197,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
                         </TouchableOpacity>
                       ))}
                     </ScrollView>
-                  </View>
+                  </BlurView>
                 )}
               </View>
 
@@ -238,7 +233,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
           ) : (
             <View style={styles.historyContainer}>
               {swapHistory.map((item) => (
-                <View key={item.id} style={styles.historyCard}>
+                <BlurView intensity={20} tint="dark" key={item.id} style={styles.historyCard}>
                   <View style={styles.historyHeader}>
                     <Text style={styles.historyDate}>{item.date}</Text>
                     <Text style={[styles.historyStatus, item.status === 'Approved' ? styles.statusApproved : styles.statusDeclined]}>
@@ -261,7 +256,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
                       <Text style={styles.historyValue}>{item.faculty}</Text>
                     </View>
                   </View>
-                </View>
+                </BlurView>
               ))}
             </View>
           )}
@@ -270,22 +265,22 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
         </ScrollView>
 
         {/* Bottom Tab Bar */}
-        <BlurView intensity={90} tint="light" style={styles.bottomTabBar}>
+        <BlurView intensity={40} tint="dark" style={styles.bottomTabBar}>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyHome')}>
-            <MaterialCommunityIcons name="home" size={28} color="#5B4BCA" />
-            <Text style={[styles.tabLabel, { color: '#5B4BCA' }]}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
+            <MaterialCommunityIcons name="home-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyTimeTable')}>
-            <MaterialCommunityIcons name="calendar-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Time Table</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyNotices')}>
-            <MaterialCommunityIcons name="bell-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
+            <MaterialCommunityIcons name="bell-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Notification</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyProfile')}>
-            <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultySettings')}>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Profile</Text>
           </TouchableOpacity>
         </BlurView>
 
@@ -320,7 +315,7 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
                    <MaterialCommunityIcons name="check-circle" size={60} color="#10B981" />
                 </View>
                 <Text style={styles.dateModalTitle}>{isTelugu ? 'అభ్యర్థన పంపబడింది!' : 'Request Sent!'}</Text>
-                <Text style={{textAlign: 'center', color: '#6B7280', marginBottom: 24}}>
+                <Text style={{textAlign: 'center', color: '#9CA3AF', marginBottom: 24}}>
                   {isTelugu ? 'మీ పీరియడ్ మార్పిడి అభ్యర్థన ఫ్యాకల్టీకి పంపబడింది.' : 'Your period swap request has been sent to the faculty.'}
                 </Text>
                 <TouchableOpacity style={styles.submitButton} onPress={() => setShowSuccessModal(false)}>
@@ -337,53 +332,51 @@ export default function FacultyPeriodSwappingScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  safeArea: { flex: 1 },
   
-  appBar: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
-  appBarLeft: { flexDirection: 'row', alignItems: 'center' },
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827' },
-  
-  appBarRight: { flexDirection: 'row', alignItems: 'center' },
+  backButton: { marginRight: 16 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', flex: 1 },
+  headerRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 16,
+    height: 32,
+    alignItems: 'center',
     padding: 2,
+  },
+  languageActive: {
+    backgroundColor: '#8B5CF6',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    height: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  languagePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 14,
-  },
-  languageActive: { backgroundColor: '#E0E7FF' },
-  languageInactive: { backgroundColor: 'transparent' },
-  languageText: { fontSize: 11, fontWeight: 'bold', color: '#6B7280' },
-  languageTextActive: { color: '#5B4BCA' },
+  languageInactive: { paddingHorizontal: 10, justifyContent: 'center' },
+  langTextActive: { color: '#F8FAFC', fontSize: 11, fontWeight: 'bold' },
+  langTextInactive: { color: '#9CA3AF', fontSize: 11, fontWeight: '500' },
 
-  scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
   tabSelectorRow: {
     flexDirection: 'row',
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   tabPill: {
     paddingVertical: 14,
-    backgroundColor: '#FFFFFF',
   },
   tabPillActive: {
     backgroundColor: '#5B4BCA',
@@ -404,7 +397,7 @@ const styles = StyleSheet.create({
   formSectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 24,
   },
 
@@ -422,43 +415,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
   dropdownToggleText: {
     fontSize: 15,
-    color: '#111827',
+    color: '#F8FAFC',
   },
   dropdownMenu: {
-    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderTopWidth: 0,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
     marginTop: -8,
     paddingTop: 8,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
     zIndex: 100,
   },
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F9FAFB',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   dropdownItemText: {
     fontSize: 15,
-    color: '#374151',
+    color: '#E2E8F0',
   },
   helperText: {
     fontSize: 13,
@@ -468,14 +455,14 @@ const styles = StyleSheet.create({
   },
 
   textInput: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
-    color: '#111827',
+    color: '#F8FAFC',
   },
   textArea: {
     height: 100,
@@ -489,7 +476,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     shadowColor: '#5B4BCA',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -499,31 +486,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyStateText: {
-    fontSize: 15,
-    color: '#9CA3AF',
-    marginTop: 12,
-  },
-
   historyContainer: {
     marginTop: 10,
   },
   historyCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.8)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    borderColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
   },
   historyHeader: {
     flexDirection: 'row',
@@ -531,13 +503,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
     paddingBottom: 8,
   },
   historyDate: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
   },
   historyStatus: {
     fontSize: 12,
@@ -548,12 +520,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   statusApproved: {
-    backgroundColor: '#DEF7EC',
-    color: '#03543F',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    color: '#34D399',
   },
   statusDeclined: {
-    backgroundColor: '#FDE8E8',
-    color: '#9B1C1C',
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    color: '#F87171',
   },
   historyDetails: {},
   historyRow: {
@@ -563,28 +535,17 @@ const styles = StyleSheet.create({
   historyLabel: {
     width: 70,
     fontSize: 14,
-    color: '#6B7280',
+    color: '#9CA3AF',
   },
   historyValue: {
     fontSize: 14,
-    color: '#111827',
+    color: '#F8FAFC',
     fontWeight: '500',
   },
 
-  bottomTabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.5)',
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
+  bottomTabBar: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', position: 'absolute', bottom: 0, width: '100%' },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#9CA3AF', marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 11, color: '#94A3B8', marginTop: 4, fontWeight: '500' },
 
   // Modal styles
   modalOverlay: {
@@ -592,34 +553,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: 'rgba(0,0,0,0.7)',
   },
   dateModalContent: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 24,
     width: '100%',
     maxWidth: 340,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 10,
+    borderWidth: 1,
+    borderColor: '#5B4BCA',
+    overflow: 'hidden',
   },
   dateModalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 16,
     textAlign: 'center',
   },
   dateOption: {
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   dateOptionText: {
     fontSize: 16,
-    color: '#374151',
+    color: '#E2E8F0',
     textAlign: 'center',
   },
   dateModalClose: {

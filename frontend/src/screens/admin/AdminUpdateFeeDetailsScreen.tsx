@@ -3,7 +3,6 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   TextInput,
@@ -11,7 +10,10 @@ import {
   Modal,
   FlatList
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
@@ -69,12 +71,13 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
         <View style={styles.appBarRight}>
@@ -103,7 +106,7 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
              style={styles.dropdown} 
              onPress={() => setShowClassModal(true)}
            >
-             <Text style={[styles.inputText, selectedClass === 'Select Class' && { color: '#9CA3AF' }]}>{selectedClass}</Text>
+             <Text style={[styles.inputText, selectedClass === 'Select Class' && { color: '#64748B' }]}>{selectedClass}</Text>
              <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
            </TouchableOpacity>
         </View>
@@ -115,7 +118,7 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
                style={styles.dropdown} 
                onPress={() => setShowStudentModal(true)}
              >
-               <Text style={[styles.inputText, !selectedStudentId && { color: '#9CA3AF' }]}>
+               <Text style={[styles.inputText, !selectedStudentId && { color: '#64748B' }]}>
                  {selectedStudent ? selectedStudent.name : 'Select Student'}
                </Text>
                <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
@@ -139,7 +142,7 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
         <View style={styles.feeSummaryCard}>
            <View style={styles.feeBox}>
               <Text style={styles.feeLabel}>Total Annual Fees</Text>
-              <Text style={[styles.feeValue, { color: '#111827' }]}>
+              <Text style={[styles.feeValue, { color: '#F8FAFC' }]}>
                 ₹ {parseInt(selectedStudent.tuitionFee || '15000') + parseInt(selectedStudent.transportFee || '5000') + parseInt(selectedStudent.libraryFee || '2000')}
               </Text>
            </View>
@@ -355,14 +358,14 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -391,7 +394,7 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 20 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 20 },
 
   studentCard: {
     flexDirection: 'row',
@@ -403,13 +406,13 @@ const styles = StyleSheet.create({
   },
   avatar: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#E5E7EB', marginRight: 16 },
   studentInfo: { flex: 1 },
-  studentName: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 4 },
-  studentDetails: { fontSize: 13, color: '#6B7280' },
+  studentName: { fontSize: 16, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 4 },
+  studentDetails: { fontSize: 13, color: '#64748B' },
 
   feeSummaryCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
@@ -422,11 +425,11 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   feeBox: { flex: 1 },
-  feeLabel: { fontSize: 12, color: '#6B7280', marginBottom: 6 },
+  feeLabel: { fontSize: 12, color: '#64748B', marginBottom: 6 },
   feeValue: { fontSize: 16, fontWeight: 'bold' },
 
   formCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
@@ -438,27 +441,27 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  formTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 20 },
+  formTitle: { fontSize: 16, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 20 },
   formGroup: { marginBottom: 16 },
-  label: { fontSize: 13, color: '#6B7280', marginBottom: 8 },
+  label: { fontSize: 13, color: '#64748B', marginBottom: 8 },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
     fontSize: 15,
-    color: '#111827',
+    color: '#F8FAFC',
   },
-  inputText: { fontSize: 15, color: '#6B7280' },
+  inputText: { fontSize: 15, color: '#64748B' },
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
@@ -466,9 +469,9 @@ const styles = StyleSheet.create({
   inputWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
@@ -481,9 +484,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   inlineDropdownList: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderTopWidth: 0,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
@@ -500,17 +503,17 @@ const styles = StyleSheet.create({
   },
   dropdownOptionText: {
     fontSize: 16,
-    color: '#374151',
+    color: '#E2E8F0',
   },
 
   // Custom Calendar Styles
   calendarContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 16,
     padding: 16,
     marginTop: 8,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     marginBottom: 16,
   },
   calendarHeader: {
@@ -522,7 +525,7 @@ const styles = StyleSheet.create({
   calendarMonthText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
   },
   calendarGrid: {
     flexDirection: 'row',
@@ -541,11 +544,11 @@ const styles = StyleSheet.create({
   calendarWeekDayText: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#6B7280',
+    color: '#64748B',
   },
   calendarDayText: {
     fontSize: 14,
-    color: '#374151',
+    color: '#E2E8F0',
   },
   calendarDayTextSelected: {
     color: '#FFFFFF',
@@ -572,7 +575,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
     position: 'absolute',
@@ -580,7 +583,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  tabLabel: { fontSize: 10, color: '#64748B', marginTop: 4, fontWeight: '500', textAlign: 'center' },
 
   // Modals
   modalOverlay: {
@@ -591,14 +594,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   centerModalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 24,
     padding: 24,
     width: '100%',
     maxWidth: 340,
     maxHeight: '80%',
   },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16, textAlign: 'center' },
   modalOption: {
     paddingVertical: 14,
     borderBottomWidth: 1,
@@ -606,7 +609,7 @@ const styles = StyleSheet.create({
   },
   modalOptionText: {
     fontSize: 15,
-    color: '#1F2937',
+    color: '#F1F5F9',
     fontWeight: '500',
   },
 });

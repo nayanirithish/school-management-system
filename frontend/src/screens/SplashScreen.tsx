@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Animated, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import GlassBackground from '../components/GlassBackground';

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Modal, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -96,32 +97,26 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
   };
 
   return (
-    <LinearGradient colors={['#FAFAFA', '#F3E8FF', '#E0F2FE']} style={styles.background}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
       <SafeAreaView style={styles.safeArea}>
         
-        {/* Top App Bar */}
-        <View style={styles.appBar}>
-          <View style={styles.appBarLeft}>
-             <TouchableOpacity onPress={() => navigation.goBack()} style={{marginRight: 12}}>
-                <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
-             </TouchableOpacity>
-             <Text style={styles.pageTitle}>{isTelugu ? 'మెటీరియల్ అప్‌లోడ్' : 'Material Upload'}</Text>
-          </View>
-          <View style={styles.appBarRight}>
-            <TouchableOpacity 
-              style={styles.languageToggle} 
-              onPress={() => setIsTelugu(!isTelugu)}
-              activeOpacity={0.8}
-            >
-              <View style={[styles.languagePill, !isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>English</Text>
-              </View>
-              <View style={[styles.languagePill, isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>Telugu</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={{ marginLeft: 12 }}>
-              <MaterialCommunityIcons name="cog-outline" size={24} color="#6B7280" />
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <MaterialCommunityIcons name="menu" size={24} color="#E0E7FF" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{isTelugu ? 'మెటీరియల్ అప్‌లోడ్' : 'Material Upload'}</Text>
+          <View style={styles.headerRight}>
+            <View style={styles.languageToggle}>
+              <TouchableOpacity onPress={() => setIsTelugu(false)} style={!isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={!isTelugu ? styles.langTextActive : styles.langTextInactive}>EN</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsTelugu(true)} style={isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>TE</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('FacultySettings')}>
+               <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
         </View>
@@ -139,11 +134,11 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
             }}
           >
             <Text style={styles.dropdownToggleText}>{selectedClass}</Text>
-            <MaterialCommunityIcons name={isClassDropdownOpen ? "chevron-up" : "chevron-down"} size={24} color="#9CA3AF" />
+            <MaterialCommunityIcons name={isClassDropdownOpen ? "chevron-up" : "chevron-down"} size={24} color="#A78BFA" />
           </TouchableOpacity>
           
           {isClassDropdownOpen && (
-            <View style={styles.dropdownMenu}>
+            <BlurView intensity={20} tint="dark" style={styles.dropdownMenu}>
               <ScrollView style={{maxHeight: 200}} nestedScrollEnabled>
                 {classes.map((cls, index) => (
                   <TouchableOpacity key={index} style={styles.dropdownItem} onPress={() => handleClassSelect(cls)}>
@@ -151,7 +146,7 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-            </View>
+            </BlurView>
           )}
 
           {/* Material Title Input */}
@@ -176,11 +171,11 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
             }}
           >
             <Text style={styles.dropdownToggleText}>{selectedSubject}</Text>
-            <MaterialCommunityIcons name={isSubjectDropdownOpen ? "chevron-up" : "chevron-down"} size={24} color="#9CA3AF" />
+            <MaterialCommunityIcons name={isSubjectDropdownOpen ? "chevron-up" : "chevron-down"} size={24} color="#A78BFA" />
           </TouchableOpacity>
           
           {isSubjectDropdownOpen && (
-            <View style={styles.dropdownMenu}>
+            <BlurView intensity={20} tint="dark" style={styles.dropdownMenu}>
               <ScrollView style={{maxHeight: 200}} nestedScrollEnabled>
                 {subjects.map((sub, index) => (
                   <TouchableOpacity key={index} style={styles.dropdownItem} onPress={() => handleSubjectSelect(sub)}>
@@ -188,7 +183,7 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-            </View>
+            </BlurView>
           )}
 
           {/* Upload File Box */}
@@ -204,7 +199,7 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
                <>
                  <MaterialCommunityIcons name="cloud-upload-outline" size={48} color="#5B4BCA" style={{marginBottom: 12}} />
                  <Text style={styles.uploadPromptMain}>
-                   <Text style={{color: '#5B4BCA', fontWeight: 'bold'}}>{isTelugu ? 'అప్‌లోడ్ చేయడానికి క్లిక్ చేయండి' : 'Click to upload'}</Text> {isTelugu ? 'లేదా లాగి వదలండి' : 'or drag and drop'}
+                   <Text style={{color: '#8B5CF6', fontWeight: 'bold'}}>{isTelugu ? 'అప్‌లోడ్ చేయడానికి క్లిక్ చేయండి' : 'Click to upload'}</Text> {isTelugu ? 'లేదా లాగి వదలండి' : 'or drag and drop'}
                  </Text>
                  <Text style={styles.uploadPromptSub}>PDF, PPT, DOCX (Max. 20MB)</Text>
                </>
@@ -240,9 +235,9 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
           </View>
           
           {displayedMaterials.map((mat) => (
-             <View key={mat.id} style={styles.materialCard}>
+             <BlurView intensity={20} tint="dark" key={mat.id} style={styles.materialCard}>
                 <View style={styles.materialIconBg}>
-                   <MaterialCommunityIcons name="file-document-outline" size={24} color="#5B4BCA" />
+                   <MaterialCommunityIcons name="file-document-outline" size={24} color="#8B5CF6" />
                 </View>
                 <View style={styles.materialInfo}>
                    <Text style={styles.materialTitleText}>{mat.title}</Text>
@@ -250,31 +245,31 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
                    <Text style={styles.materialDateText}>{mat.date}</Text>
                 </View>
                 <TouchableOpacity style={styles.viewButton} activeOpacity={0.7}>
-                   <MaterialCommunityIcons name="eye-outline" size={22} color="#6366F1" />
+                   <MaterialCommunityIcons name="eye-outline" size={22} color="#D8B4FE" />
                 </TouchableOpacity>
-             </View>
+             </BlurView>
           ))}
 
           <View style={{ height: 100 }} />
         </ScrollView>
 
         {/* Bottom Tab Bar */}
-        <BlurView intensity={90} tint="light" style={styles.bottomTabBar}>
+        <BlurView intensity={40} tint="dark" style={styles.bottomTabBar}>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyHome')}>
-            <MaterialCommunityIcons name="home-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
+            <MaterialCommunityIcons name="home-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyTimeTable')}>
-            <MaterialCommunityIcons name="calendar-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Time Table</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyNotices')}>
-            <MaterialCommunityIcons name="bell-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
+            <MaterialCommunityIcons name="bell-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Notification</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyProfile')}>
-            <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultySettings')}>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Profile</Text>
           </TouchableOpacity>
         </BlurView>
 
@@ -282,6 +277,7 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
         {showSuccessModal && (
           <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
             <View style={styles.modalOverlay}>
+              <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
               <View style={styles.modalContent}>
                 <View style={styles.successIconBg}>
                   <MaterialCommunityIcons name="check" size={40} color="#10B981" />
@@ -307,40 +303,39 @@ export default function FacultyMaterialUploadScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  safeArea: { flex: 1 },
   
-  appBar: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
-  appBarLeft: { flexDirection: 'row', alignItems: 'center' },
-  pageTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827' },
-  
-  appBarRight: { flexDirection: 'row', alignItems: 'center' },
+  backButton: { marginRight: 16 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', flex: 1 },
+  headerRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 16,
+    height: 32,
+    alignItems: 'center',
     padding: 2,
+  },
+  languageActive: {
+    backgroundColor: '#8B5CF6',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    height: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  languagePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 14,
-  },
-  languageActive: { backgroundColor: '#E0E7FF' },
-  languageInactive: { backgroundColor: 'transparent' },
-  languageText: { fontSize: 11, fontWeight: 'bold', color: '#6B7280' },
-  languageTextActive: { color: '#5B4BCA' },
+  languageInactive: { paddingHorizontal: 10, justifyContent: 'center' },
+  langTextActive: { color: '#F8FAFC', fontSize: 11, fontWeight: 'bold' },
+  langTextInactive: { color: '#9CA3AF', fontSize: 11, fontWeight: '500' },
 
-  scrollContent: { paddingHorizontal: 20, paddingTop: 20 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
   inputLabel: {
     fontSize: 14,
@@ -354,50 +349,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
   dropdownToggleText: {
     fontSize: 15,
-    color: '#111827',
+    color: '#F8FAFC',
   },
   dropdownMenu: {
-    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     marginTop: 4,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F9FAFB',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   dropdownItemText: {
     fontSize: 15,
-    color: '#374151',
+    color: '#E2E8F0',
   },
 
   textInput: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
-    color: '#111827',
+    color: '#F8FAFC',
   },
   textArea: {
     height: 100,
@@ -405,10 +394,10 @@ const styles = StyleSheet.create({
 
   uploadArea: {
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: '#4F46E5',
     borderStyle: 'dashed',
     borderRadius: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     paddingVertical: 32,
     paddingHorizontal: 20,
     alignItems: 'center',
@@ -416,7 +405,7 @@ const styles = StyleSheet.create({
   },
   uploadPromptMain: {
     fontSize: 15,
-    color: '#6B7280',
+    color: '#E2E8F0',
     textAlign: 'center',
     marginBottom: 8,
   },
@@ -426,14 +415,14 @@ const styles = StyleSheet.create({
   },
   selectedFileText: {
     fontSize: 16,
-    color: '#111827',
+    color: '#10B981',
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 4,
   },
   reselectText: {
     fontSize: 13,
-    color: '#5B4BCA',
+    color: '#8B5CF6',
   },
 
   submitButton: {
@@ -444,7 +433,7 @@ const styles = StyleSheet.create({
     marginTop: 32,
     shadowColor: '#5B4BCA',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -454,40 +443,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  bottomTabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.5)',
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
+  bottomTabBar: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', position: 'absolute', bottom: 0, width: '100%' },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#9CA3AF', marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 11, color: '#94A3B8', marginTop: 4, fontWeight: '500' },
 
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, marginBottom: 16 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827' },
-  viewAllText: { fontSize: 14, color: '#5B4BCA', fontWeight: '600' },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#F8FAFC' },
+  viewAllText: { fontSize: 14, color: '#A78BFA', fontWeight: '600' },
   
   materialCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
   },
   materialIconBg: {
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: '#EEF2FF',
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -498,23 +476,23 @@ const styles = StyleSheet.create({
   materialTitleText: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 4,
   },
   materialSubText: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#9CA3AF',
     marginBottom: 2,
   },
   materialDateText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#64748B',
   },
   viewButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#EEF2FF',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -522,29 +500,26 @@ const styles = StyleSheet.create({
   // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 32,
     alignItems: 'center',
     width: '100%',
-    maxWidth: 400,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
+    maxWidth: 340,
+    borderWidth: 1,
+    borderColor: '#5B4BCA',
+    overflow: 'hidden',
   },
   successIconBg: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#D1FAE5',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
@@ -552,13 +527,13 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 12,
     textAlign: 'center',
   },
   successText: {
     fontSize: 15,
-    color: '#6B7280',
+    color: '#9CA3AF',
     textAlign: 'center',
     marginBottom: 32,
     lineHeight: 22,

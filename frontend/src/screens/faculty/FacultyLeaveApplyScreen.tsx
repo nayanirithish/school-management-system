@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Modal, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -103,8 +104,7 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
     if (selectedLeaveType && fromDate && toDate && reason) {
       setShowSuccessModal(true);
     } else {
-      // In a real app, show validation error
-      setShowSuccessModal(true);
+      setShowSuccessModal(true); // Assuming success anyway for demo
     }
   };
 
@@ -125,44 +125,32 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
   };
 
   return (
-    <LinearGradient colors={['#E0F2FE', '#F3E8FF', '#F9FAFB']} style={styles.background}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
       <SafeAreaView style={styles.safeArea}>
         
-        {/* Top App Bar */}
-        <View style={styles.appBar}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-             <MaterialCommunityIcons name="menu" size={28} color="#1F2937" />
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <MaterialCommunityIcons name="menu" size={24} color="#E0E7FF" />
           </TouchableOpacity>
-          <Text style={styles.brandTitle}>ORYOL</Text>
-          <View style={styles.appBarRight}>
-            <TouchableOpacity 
-              style={styles.languageToggle} 
-              onPress={() => setIsTelugu(!isTelugu)}
-              activeOpacity={0.8}
-            >
-              <View style={[styles.languagePill, !isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>EN</Text>
-              </View>
-              <View style={[styles.languagePill, isTelugu ? styles.languageActive : styles.languageInactive]}>
-                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>TE</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={{ marginLeft: 12 }}>
-              <MaterialCommunityIcons name="cog-outline" size={24} color="#6B7280" />
+          <Text style={styles.headerTitle}>{isTelugu ? 'సెలవు దరఖాస్తు' : 'Leave Application'}</Text>
+          <View style={styles.headerRight}>
+            <View style={styles.languageToggle}>
+              <TouchableOpacity onPress={() => setIsTelugu(false)} style={!isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={!isTelugu ? styles.langTextActive : styles.langTextInactive}>EN</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsTelugu(true)} style={isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>TE</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('FacultySettings')}>
+               <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Sub Header */}
-        <View style={styles.subHeader}>
-           <TouchableOpacity onPress={() => navigation.goBack()} style={{marginRight: 16}}>
-              <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
-           </TouchableOpacity>
-           <Text style={styles.pageTitle}>{isTelugu ? 'సెలవు దరఖాస్తు' : 'Leave Application'}</Text>
-        </View>
-
         {/* Tab Bar */}
-        <View style={styles.tabContainer}>
+        <BlurView intensity={20} tint="dark" style={styles.tabContainer}>
           <TouchableOpacity 
             style={[styles.tabButton, activeTab === 'Apply' && styles.tabButtonActive]}
             onPress={() => setActiveTab('Apply')}
@@ -187,7 +175,7 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
               {isTelugu ? 'తిరస్కరించబడినవి' : 'Rejected'}
             </Text>
           </TouchableOpacity>
-        </View>
+        </BlurView>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           
@@ -234,7 +222,6 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
                 </TouchableOpacity>
               </View>
               
-              {/* Custom From Date Picker Modal (In-layout) */}
               {showFromPicker && (
                 <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
                   <View style={styles.modalOverlay}>
@@ -269,7 +256,6 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
                 </TouchableOpacity>
               </View>
 
-              {/* Custom To Date Picker Modal (In-layout) */}
               {showToPicker && (
                 <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
                   <View style={styles.modalOverlay}>
@@ -333,7 +319,7 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
               {leaveHistory
                 .filter(leave => leave.status === activeTab)
                 .map((leave) => (
-                <View key={leave.id} style={styles.historyCard}>
+                <BlurView intensity={20} tint="dark" key={leave.id} style={styles.historyCard}>
                   <View style={styles.historyHeader}>
                     <View style={styles.historyTypeWrapper}>
                       <MaterialCommunityIcons 
@@ -362,7 +348,7 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
                     </Text>
                     <Text style={styles.historyConditionText}>{leave.condition}</Text>
                   </View>
-                </View>
+                </BlurView>
               ))}
               {leaveHistory.filter(leave => leave.status === activeTab).length === 0 && (
                 <Text style={{ textAlign: 'center', color: '#6B7280', marginTop: 20 }}>
@@ -375,27 +361,27 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
           <View style={{ height: 120 }} />
         </ScrollView>
 
-        {/* Bottom Tab Bar (Fixed) */}
-        <BlurView intensity={90} tint="light" style={styles.bottomTabBar}>
+        {/* Bottom Tab Bar */}
+        <BlurView intensity={40} tint="dark" style={styles.bottomTabBar}>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyHome')}>
-            <MaterialCommunityIcons name="home-outline" size={28} color="#6B7280" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
+            <MaterialCommunityIcons name="home-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyTimeTable')}>
-            <MaterialCommunityIcons name="calendar-outline" size={28} color="#6B7280" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Time Table</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyNotices')}>
-            <MaterialCommunityIcons name="bell-outline" size={28} color="#6B7280" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
+            <MaterialCommunityIcons name="bell-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Notification</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultySettings')}>
-            <MaterialCommunityIcons name="account-outline" size={28} color="#6B7280" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Profile</Text>
           </TouchableOpacity>
         </BlurView>
 
-        {/* Success Modal (In-layout) */}
+        {/* Success Modal */}
         {showSuccessModal && (
           <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
             <View style={styles.modalOverlay}>
@@ -423,53 +409,47 @@ export default function FacultyLeaveApplyScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  safeArea: { flex: 1 },
   
-  appBar: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
-  brandTitle: { fontSize: 20, fontWeight: '800', color: '#5B4BCA', letterSpacing: 1 },
-  appBarRight: { flexDirection: 'row', alignItems: 'center' },
+  backButton: { marginRight: 16 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', flex: 1 },
+  headerRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    backgroundColor: '#E0E7FF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 16,
+    height: 32,
+    alignItems: 'center',
     padding: 2,
-    alignItems: 'center',
   },
-  languagePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  languageActive: {
+    backgroundColor: '#8B5CF6',
     borderRadius: 14,
-  },
-  languageActive: { backgroundColor: '#5B4BCA' },
-  languageInactive: { backgroundColor: 'transparent' },
-  languageText: { fontSize: 11, fontWeight: 'bold', color: '#6B7280' },
-  languageTextActive: { color: '#FFFFFF' },
-
-  subHeader: {
-    flexDirection: 'row',
+    paddingHorizontal: 10,
+    height: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
   },
-  pageTitle: { fontSize: 22, fontWeight: 'bold', color: '#111827' },
-  
+  languageInactive: { paddingHorizontal: 10, justifyContent: 'center' },
+  langTextActive: { color: '#F8FAFC', fontSize: 11, fontWeight: 'bold' },
+  langTextInactive: { color: '#9CA3AF', fontSize: 11, fontWeight: '500' },
+
   tabContainer: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    marginTop: 8,
+    marginHorizontal: 16,
+    marginTop: 16,
     marginBottom: 8,
-    backgroundColor: '#F3F4F6',
     borderRadius: 12,
     padding: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   tabButton: {
     flex: 1,
@@ -478,23 +458,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   tabButtonActive: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    backgroundColor: '#5B4BCA',
   },
   tabText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#9CA3AF',
   },
   tabTextActive: {
-    color: '#5B4BCA',
+    color: '#FFFFFF',
   },
 
-  scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
   inputGroup: {
     marginBottom: 20,
@@ -502,13 +477,13 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: '#9CA3AF',
     marginBottom: 8,
   },
   dropdownContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     overflow: 'hidden',
   },
@@ -516,9 +491,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -528,11 +503,11 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
   },
   selectedText: {
-    color: '#111827',
+    color: '#F8FAFC',
   },
   dropdownMenu: {
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   dropdownItem: {
     flexDirection: 'row',
@@ -543,11 +518,11 @@ const styles = StyleSheet.create({
   },
   dropdownItemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   dropdownItemText: {
     fontSize: 15,
-    color: '#4B5563',
+    color: '#E2E8F0',
   },
   textAreaBox: {
     alignItems: 'flex-start',
@@ -558,14 +533,14 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     fontSize: 15,
-    color: '#111827',
+    color: '#F8FAFC',
   },
   uploadBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -579,7 +554,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     shadowColor: '#5B4BCA',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -589,40 +564,82 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  bottomTabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.5)',
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
+  historySection: {
+    marginTop: 16,
   },
-  tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#6B7280', marginTop: 4, fontWeight: '500' },
+  historyCard: {
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  historyTypeWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  historyType: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#F8FAFC',
+    marginLeft: 8,
+  },
+  historyDates: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    marginBottom: 12,
+  },
+  historyConditionBox: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 8,
+    padding: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#5B4BCA',
+  },
+  historyConditionLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#9CA3AF',
+    marginBottom: 4,
+  },
+  historyConditionText: {
+    fontSize: 13,
+    color: '#E2E8F0',
+    lineHeight: 18,
+  },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  statusApproved: { backgroundColor: 'rgba(16, 185, 129, 0.2)' },
+  statusRejected: { backgroundColor: 'rgba(239, 68, 68, 0.2)' },
+  statusTextApproved: { color: '#34D399', fontSize: 12, fontWeight: 'bold' },
+  statusTextRejected: { color: '#F87171', fontSize: 12, fontWeight: 'bold' },
 
-  // Modal styles
+  bottomTabBar: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', position: 'absolute', bottom: 0, width: '100%' },
+  tabItem: { alignItems: 'center' },
+  tabLabel: { fontSize: 11, color: '#94A3B8', marginTop: 4, fontWeight: '500' },
+
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: 'rgba(0,0,0,0.7)',
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 30,
     alignItems: 'center',
     width: '100%',
     maxWidth: 340,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 10,
+    borderWidth: 1,
+    borderColor: '#5B4BCA',
+    overflow: 'hidden',
   },
   successIconContainer: {
     marginBottom: 16,
@@ -630,12 +647,12 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 8,
   },
   modalMessage: {
     fontSize: 15,
-    color: '#6B7280',
+    color: '#9CA3AF',
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 22,
@@ -654,32 +671,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   dateModalContent: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 24,
     width: '100%',
     maxWidth: 340,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 10,
+    borderWidth: 1,
+    borderColor: '#5B4BCA',
+    overflow: 'hidden',
   },
   dateModalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 16,
     textAlign: 'center',
   },
   dateOption: {
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   dateOptionText: {
     fontSize: 16,
-    color: '#374151',
+    color: '#E2E8F0',
     textAlign: 'center',
   },
   dateModalClose: {
@@ -692,65 +706,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#EF4444',
   },
-  historySection: {
-    marginTop: 16,
-  },
-  historyTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 16,
-    display: 'none', // hidden since tabs handle the title context
-  },
-  historyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  historyHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  historyTypeWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  historyType: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1F2937',
-    marginLeft: 8,
-  },
-  historyDates: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 12,
-  },
-  historyConditionBox: {
-    backgroundColor: '#F9FAFB',
-    borderRadius: 8,
-    padding: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: '#5B4BCA',
-  },
-  historyConditionLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#4B5563',
-    marginBottom: 4,
-  },
-  historyConditionText: {
-    fontSize: 13,
-    color: '#374151',
-    lineHeight: 18,
-  },
-  statusApproved: { backgroundColor: '#D1FAE5' },
-  statusRejected: { backgroundColor: '#FEE2E2' },
-  statusTextApproved: { color: '#059669' },
-  statusTextRejected: { color: '#DC2626' },
 });

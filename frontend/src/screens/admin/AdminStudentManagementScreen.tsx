@@ -3,14 +3,16 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   TextInput,
   Image,
   Modal
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
@@ -33,12 +35,13 @@ export default function AdminStudentManagementScreen({ navigation }: Props) {
   const activeStudent = studentList.find(s => s.id === activeModalId);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
         <View style={styles.appBarRight}>
@@ -79,7 +82,7 @@ export default function AdminStudentManagementScreen({ navigation }: Props) {
         <View style={styles.statsRow}>
            <View style={[styles.statCard, { flex: 1.1 }]}>
               <Text style={styles.statLabel}>Total Students</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>{totalStudents}</Text>
+              <Text style={[styles.statValue, { color: '#F8FAFC' }]}>{totalStudents}</Text>
            </View>
            <View style={[styles.statCard, { flex: 1 }]}>
               <Text style={styles.statLabel}>Active Students</Text>
@@ -87,7 +90,7 @@ export default function AdminStudentManagementScreen({ navigation }: Props) {
            </View>
            <View style={[styles.statCard, { flex: 1 }]}>
               <Text style={styles.statLabel}>Inactive Students</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>{inactiveStudentsCount}</Text>
+              <Text style={[styles.statValue, { color: '#F8FAFC' }]}>{inactiveStudentsCount}</Text>
            </View>
         </View>
 
@@ -180,14 +183,14 @@ export default function AdminStudentManagementScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -216,28 +219,28 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
 
   searchRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
   searchBox: { 
     flex: 1, 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: 'rgba(15, 23, 42, 0.5)', 
     borderWidth: 1, 
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
   },
   searchIcon: { marginRight: 8 },
-  searchInput: { flex: 1, fontSize: 14, color: '#111827' },
+  searchInput: { flex: 1, fontSize: 14, color: '#F8FAFC' },
   filterButton: {
     width: 48,
     height: 48,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -246,7 +249,7 @@ const styles = StyleSheet.create({
 
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   statCard: { 
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: 'rgba(15, 23, 42, 0.5)', 
     borderWidth: 1,
     borderColor: '#F3F4F6',
     borderRadius: 12, 
@@ -260,14 +263,14 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  statLabel: { fontSize: 11, color: '#6B7280', marginBottom: 6, textAlign: 'center' },
+  statLabel: { fontSize: 11, color: '#64748B', marginBottom: 6, textAlign: 'center' },
   statValue: { fontSize: 18, fontWeight: 'bold' },
 
   listContainer: { paddingBottom: 20 },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
     borderColor: '#F3F4F6',
     borderRadius: 16,
@@ -281,8 +284,8 @@ const styles = StyleSheet.create({
   },
   avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#E5E7EB', marginRight: 12 },
   listInfo: { flex: 1 },
-  studentName: { fontSize: 15, fontWeight: 'bold', color: '#111827', marginBottom: 2 },
-  studentDetails: { fontSize: 12, color: '#6B7280' },
+  studentName: { fontSize: 15, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 2 },
+  studentDetails: { fontSize: 12, color: '#64748B' },
   statusPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginRight: 8 },
   statusActive: { backgroundColor: '#D1FAE5' },
   statusInactive: { backgroundColor: '#FEE2E2' },
@@ -312,7 +315,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
     position: 'absolute',
@@ -320,7 +323,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  tabLabel: { fontSize: 10, color: '#64748B', marginTop: 4, fontWeight: '500', textAlign: 'center' },
 
   modalOverlay: {
     flex: 1,
@@ -330,13 +333,13 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   centerModalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 24,
     padding: 24,
     width: '100%',
     maxWidth: 340,
   },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16, textAlign: 'center' },
   settingsOption: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -346,7 +349,7 @@ const styles = StyleSheet.create({
   },
   settingsOptionText: {
     fontSize: 15,
-    color: '#1F2937',
+    color: '#F1F5F9',
     marginLeft: 12,
     fontWeight: '500',
   },

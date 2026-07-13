@@ -3,7 +3,6 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   Image,
@@ -11,7 +10,10 @@ import {
   FlatList,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as DocumentPicker from 'expo-document-picker';
 import { RootStackParamList } from '../../../App';
@@ -64,12 +66,13 @@ export default function AdminUploadResultsScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
         <View style={styles.appBarRight}>
@@ -92,7 +95,7 @@ export default function AdminUploadResultsScreen({ navigation }: Props) {
            <View style={styles.formGroup}>
              <Text style={styles.label}>Select Class</Text>
              <TouchableOpacity style={styles.dropdown} onPress={() => setShowClassModal(true)}>
-               <Text style={[styles.inputText, !selectedClass && { color: '#9CA3AF' }]}>
+               <Text style={[styles.inputText, !selectedClass && { color: '#64748B' }]}>
                  {selectedClass || 'Select a class'}
                </Text>
                <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
@@ -102,7 +105,7 @@ export default function AdminUploadResultsScreen({ navigation }: Props) {
            <View style={styles.formGroup}>
              <Text style={styles.label}>Exam Type</Text>
              <TouchableOpacity style={styles.dropdown} onPress={() => setShowExamModal(true)}>
-               <Text style={[styles.inputText, !selectedExamType && { color: '#9CA3AF' }]}>
+               <Text style={[styles.inputText, !selectedExamType && { color: '#64748B' }]}>
                  {selectedExamType || 'Select exam type'}
                </Text>
                <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
@@ -185,13 +188,13 @@ export default function AdminUploadResultsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -220,10 +223,10 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 20 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 20 },
 
   formCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
@@ -235,40 +238,40 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   formGroup: { marginBottom: 20 },
-  label: { fontSize: 13, color: '#6B7280', marginBottom: 8 },
+  label: { fontSize: 13, color: '#64748B', marginBottom: 8 },
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 52,
   },
-  inputText: { fontSize: 15, color: '#111827' },
+  inputText: { fontSize: 15, color: '#F8FAFC' },
   
-  sectionDivider: { height: 1, backgroundColor: '#F3F4F6', marginVertical: 20 },
-  sectionTitle: { fontSize: 15, fontWeight: 'bold', color: '#111827', marginBottom: 12 },
+  sectionDivider: { height: 1, backgroundColor: 'transparent', marginVertical: 20 },
+  sectionTitle: { fontSize: 15, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 12 },
 
   uploadBox: {
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderStyle: 'dashed',
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'transparent',
   },
   uploadText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#64748B',
     marginTop: 4,
   },
   fileName: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#64748B',
     marginTop: 8,
     textAlign: 'center'
   },
@@ -297,14 +300,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   centerModalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 24,
     padding: 24,
     width: '100%',
     maxWidth: 340,
     maxHeight: '80%',
   },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16, textAlign: 'center' },
   modalOption: {
     paddingVertical: 14,
     borderBottomWidth: 1,
@@ -312,7 +315,7 @@ const styles = StyleSheet.create({
   },
   modalOptionText: {
     fontSize: 15,
-    color: '#1F2937',
+    color: '#F1F5F9',
     fontWeight: '500',
     textAlign: 'center'
   },

@@ -3,11 +3,13 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 
@@ -26,12 +28,13 @@ export default function AdminReportsScreen({ navigation }: Props) {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>Reports</Text>
         <TouchableOpacity>
@@ -124,14 +127,14 @@ export default function AdminReportsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
   brandTitle: { fontSize: 22, fontWeight: '900', color: '#4F46E5', flex: 1, letterSpacing: 0.5 },
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 20 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
 
   reportsGrid: {
     flexDirection: 'row',
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
     width: '48%',
     borderRadius: 20,
     marginBottom: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
     borderColor: '#F3F4F6',
     shadowColor: '#000',
@@ -173,24 +176,24 @@ const styles = StyleSheet.create({
   reportValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 4,
   },
   reportTitle: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#4B5563',
+    color: '#CBD5E1',
   },
   reportSubtitle: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: '#64748B',
     marginTop: 4,
   },
 
   detailedReportWrapper: {
     borderRadius: 16,
     marginBottom: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
     borderColor: '#F3F4F6',
     shadowColor: '#000',
@@ -216,12 +219,12 @@ const styles = StyleSheet.create({
   detailedReportTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#F8FAFC',
     marginBottom: 4,
   },
   detailedReportSubtitle: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#64748B',
   },
 
   bottomTabBar: {
@@ -229,7 +232,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
     position: 'absolute',
@@ -237,5 +240,5 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  tabLabel: { fontSize: 10, color: '#64748B', marginTop: 4, fontWeight: '500', textAlign: 'center' },
 });

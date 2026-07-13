@@ -3,7 +3,6 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   TextInput,
@@ -12,7 +11,10 @@ import {
   Platform,
   Image
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
@@ -70,12 +72,13 @@ export default function AdminClassesScreen({ navigation }: Props) {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
         <View style={styles.appBarRight}>
@@ -115,7 +118,7 @@ export default function AdminClassesScreen({ navigation }: Props) {
         <View style={styles.statsRow}>
            <View style={styles.statBox}>
               <Text style={styles.statLabel}>Total Classes</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>18</Text>
+              <Text style={[styles.statValue, { color: '#F8FAFC' }]}>18</Text>
            </View>
            <View style={styles.statBox}>
               <Text style={styles.statLabel}>Active</Text>
@@ -123,7 +126,7 @@ export default function AdminClassesScreen({ navigation }: Props) {
            </View>
            <View style={styles.statBox}>
               <Text style={styles.statLabel}>Students</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>1,248</Text>
+              <Text style={[styles.statValue, { color: '#F8FAFC' }]}>1,248</Text>
            </View>
         </View>
 
@@ -297,14 +300,14 @@ export default function AdminClassesScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -333,28 +336,28 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
 
   searchRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     marginRight: 0,
   },
   searchIcon: { marginRight: 8 },
-  searchInput: { flex: 1, fontSize: 15, color: '#111827', outlineStyle: 'none' as any },
+  searchInput: { flex: 1, fontSize: 15, color: '#F8FAFC', outlineStyle: 'none' as any },
 
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   statBox: { 
     flex: 1, 
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: 'rgba(15, 23, 42, 0.5)', 
     borderRadius: 16, 
     padding: 16, 
     alignItems: 'center',
@@ -367,12 +370,12 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  statLabel: { fontSize: 12, color: '#6B7280', marginBottom: 4 },
+  statLabel: { fontSize: 12, color: '#64748B', marginBottom: 4 },
   statValue: { fontSize: 20, fontWeight: 'bold' },
 
   listContainer: { paddingBottom: 20 },
   classCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 20,
     padding: 16,
     marginBottom: 16,
@@ -395,14 +398,14 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   classTitleInfo: { flex: 1, justifyContent: 'center' },
-  className: { fontSize: 15, fontWeight: 'bold', color: '#111827', marginBottom: 2 },
-  classTeacher: { fontSize: 12, color: '#6B7280' },
+  className: { fontSize: 15, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 2 },
+  classTeacher: { fontSize: 12, color: '#64748B' },
   roomPill: { backgroundColor: '#EEF2FF', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   roomText: { fontSize: 11, fontWeight: 'bold', color: '#4F46E5' },
   
   classFooter: { flexDirection: 'row', alignItems: 'center', marginLeft: 56 },
   footerItem: { flexDirection: 'row', alignItems: 'center', marginRight: 16 },
-  footerText: { fontSize: 12, color: '#6B7280', marginLeft: 6 },
+  footerText: { fontSize: 12, color: '#64748B', marginLeft: 6 },
 
   fabContainer: { position: 'absolute', bottom: 80, left: 16, right: 16 },
   fabButton: { 
@@ -425,7 +428,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
     position: 'absolute',
@@ -433,7 +436,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  tabLabel: { fontSize: 10, color: '#64748B', marginTop: 4, fontWeight: '500', textAlign: 'center' },
 
   studentListContainer: {
     marginTop: 16,
@@ -444,7 +447,7 @@ const styles = StyleSheet.create({
   studentListTitle: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#374151',
+    color: '#E2E8F0',
     marginBottom: 12,
   },
   studentItem: {
@@ -464,11 +467,11 @@ const styles = StyleSheet.create({
   studentName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: '#E2E8F0',
   },
   studentRollNo: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: '#64748B',
     marginTop: 2,
   },
   moreStudentsButton: {
@@ -492,17 +495,17 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 16,
     padding: 24,
   },
-  modalTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
   formGroup: { marginBottom: 16 },
-  label: { fontSize: 13, color: '#6B7280', marginBottom: 8 },
+  label: { fontSize: 13, color: '#64748B', marginBottom: 8 },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
@@ -510,7 +513,7 @@ const styles = StyleSheet.create({
   },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 8 },
   cancelButton: { paddingVertical: 10, paddingHorizontal: 16, marginRight: 8 },
-  cancelButtonText: { color: '#6B7280', fontSize: 16, fontWeight: '500' },
+  cancelButtonText: { color: '#64748B', fontSize: 16, fontWeight: '500' },
   saveButton: { backgroundColor: '#4F46E5', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 12 },
   saveButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
 });

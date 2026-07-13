@@ -3,7 +3,6 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   TextInput,
@@ -11,6 +10,7 @@ import {
   Modal,
   FlatList
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -18,6 +18,8 @@ import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAdmin, Faculty } from '../../context/AdminContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 type AdminAddUpdateFacultyRouteProp = RouteProp<RootStackParamList, 'AdminAddUpdateFaculty'>;
 type AdminAddUpdateFacultyNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AdminAddUpdateFaculty'>;
@@ -97,260 +99,261 @@ export default function AdminAddUpdateFacultyScreen({ navigation, route }: Props
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      
-      {/* Top App Bar */}
-      <View style={styles.appBar}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
-        </TouchableOpacity>
-        <Text style={styles.brandTitle}>ORYOL</Text>
-        <View style={styles.appBarRight}>
-          <View style={styles.languageToggle}>
-            <TouchableOpacity onPress={() => setIsTelugu(false)} style={!isTelugu ? styles.languageActive : styles.languageInactive}>
-              <Text style={!isTelugu ? styles.langTextActive : styles.langTextInactive}>English</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsTelugu(true)} style={isTelugu ? styles.languageActive : styles.languageInactive}>
-              <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>Telugu</Text>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
+        
+        {/* Top App Bar */}
+        <View style={styles.appBar}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <MaterialCommunityIcons name="menu" size={24} color="#E0E7FF" />
+          </TouchableOpacity>
+          <Text style={styles.brandTitle}>ORYOL</Text>
+          <View style={styles.appBarRight}>
+            <View style={styles.languageToggle}>
+              <TouchableOpacity onPress={() => setIsTelugu(false)} style={!isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={!isTelugu ? styles.langTextActive : styles.langTextInactive}>EN</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsTelugu(true)} style={isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>TE</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={{ marginLeft: 12 }}>
+              <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={{ marginLeft: 12 }}>
-            <MaterialCommunityIcons name="cog-outline" size={24} color="#4B5563" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        
-        <Text style={styles.pageTitle}>Add / Update Faculty</Text>
-
-        {/* Avatar Upload */}
-        <View style={styles.avatarSection}>
-           <View style={styles.avatarWrapper}>
-             <Image source={{ uri: avatar }} style={styles.avatarImage} />
-             <TouchableOpacity style={styles.cameraButton} onPress={() => pickDocument(setAvatar)}>
-                <MaterialCommunityIcons name="camera" size={16} color="#FFFFFF" />
-             </TouchableOpacity>
-             <TouchableOpacity 
-               style={styles.deleteAvatarButton} 
-               onPress={() => setAvatar(`https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`)}
-             >
-                <MaterialCommunityIcons name="delete" size={16} color="#FFFFFF" />
-             </TouchableOpacity>
-           </View>
         </View>
 
-        {/* Form Fields */}
-        <View style={styles.formGroup}>
-           <Text style={styles.label}>Full Name</Text>
-           <TextInput 
-             style={styles.input} 
-             value={name} 
-             onChangeText={setName} 
-           />
-        </View>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          
+          <Text style={styles.pageTitle}>{isTelugu ? 'ఫ్యాకల్టీని జోడించండి / నవీకరించండి' : 'Add / Update Faculty'}</Text>
 
-        <View style={styles.formGroup}>
-           <Text style={styles.label}>Department</Text>
-           <TouchableOpacity style={styles.dropdown} onPress={() => setShowDeptModal(true)}>
-             <Text style={styles.inputText}>{department || 'Select Department'}</Text>
-             <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
-           </TouchableOpacity>
-        </View>
-
-        <View style={styles.formGroup}>
-           <Text style={styles.label}>Email</Text>
-           <TextInput 
-             style={styles.input} 
-             value={email} 
-             onChangeText={setEmail} 
-             keyboardType="email-address"
-             autoCapitalize="none"
-           />
-        </View>
-
-        <View style={styles.formGroup}>
-           <Text style={styles.label}>Contact Number</Text>
-           <TextInput 
-             style={styles.input} 
-             value={contact} 
-             onChangeText={setContact} 
-             keyboardType="phone-pad"
-           />
-        </View>
-
-        <View style={styles.formGroup}>
-           <Text style={styles.label}>Qualification</Text>
-           <TextInput 
-             style={styles.input} 
-             value={qualification} 
-             onChangeText={setQualification} 
-           />
-        </View>
-
-        <View style={styles.row}>
-           <View style={[styles.formGroup, { flex: 1, marginRight: 8 }]}>
-             <Text style={styles.label}>Date of Joining</Text>
-             <View style={styles.inputWithIcon}>
-               <TextInput 
-                 style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0 }]} 
-                 value={doj} 
-                 onChangeText={setDoj} 
-               />
-               <MaterialCommunityIcons name="calendar-blank-outline" size={20} color="#111827" style={styles.inputIcon} />
+          {/* Avatar Upload */}
+          <View style={styles.avatarSection}>
+             <View style={styles.avatarWrapper}>
+               <Image source={{ uri: avatar }} style={styles.avatarImage} />
+               <TouchableOpacity style={styles.cameraButton} onPress={() => pickDocument(setAvatar)}>
+                  <MaterialCommunityIcons name="camera" size={16} color="#FFFFFF" />
+               </TouchableOpacity>
+               <TouchableOpacity 
+                 style={styles.deleteAvatarButton} 
+                 onPress={() => setAvatar(`https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`)}
+               >
+                  <MaterialCommunityIcons name="delete" size={16} color="#FFFFFF" />
+               </TouchableOpacity>
              </View>
-           </View>
-           <View style={[styles.formGroup, { flex: 1, marginLeft: 8 }]}>
-             <Text style={styles.label}>Status</Text>
-             <TouchableOpacity 
-               style={styles.dropdown}
-               onPress={() => setStatus(prev => prev === 'Active' ? 'Inactive' : 'Active')}
-             >
-               <Text style={styles.inputText}>{status}</Text>
-               <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
+          </View>
+
+          {/* Form Fields */}
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>{isTelugu ? 'పూర్తి పేరు' : 'Full Name'}</Text>
+             <TextInput 
+               style={styles.input} 
+               value={name} 
+               onChangeText={setName} 
+             />
+          </View>
+
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>{isTelugu ? 'విభాగం' : 'Department'}</Text>
+             <TouchableOpacity style={styles.dropdown} onPress={() => setShowDeptModal(true)}>
+               <Text style={styles.inputText}>{department || (isTelugu ? 'విభాగాన్ని ఎంచుకోండి' : 'Select Department')}</Text>
+               <MaterialCommunityIcons name="chevron-down" size={20} color="#94A3B8" />
              </TouchableOpacity>
-           </View>
-        </View>
+          </View>
 
-        <View style={styles.sectionDivider} />
-        <Text style={styles.sectionTitle}>Educational Qualification Documents</Text>
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>{isTelugu ? 'ఇమెయిల్' : 'Email'}</Text>
+             <TextInput 
+               style={styles.input} 
+               value={email} 
+               onChangeText={setEmail} 
+               keyboardType="email-address"
+               autoCapitalize="none"
+             />
+          </View>
 
-        <View style={styles.formGroup}>
-           <Text style={styles.label}>Degree Certificate</Text>
-           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setDegreePhoto)}>
-             <MaterialCommunityIcons name={degreePhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={degreePhoto ? "#10B981" : "#6B7280"} />
-             <Text style={styles.uploadText}>{degreePhoto ? 'Degree Document Uploaded' : 'Tap to upload Photo'}</Text>
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>{isTelugu ? 'సంప్రదింపు సంఖ్య' : 'Contact Number'}</Text>
+             <TextInput 
+               style={styles.input} 
+               value={contact} 
+               onChangeText={setContact} 
+               keyboardType="phone-pad"
+             />
+          </View>
+
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>{isTelugu ? 'అర్హత' : 'Qualification'}</Text>
+             <TextInput 
+               style={styles.input} 
+               value={qualification} 
+               onChangeText={setQualification} 
+             />
+          </View>
+
+          <View style={styles.row}>
+             <View style={[styles.formGroup, { flex: 1, marginRight: 8 }]}>
+               <Text style={styles.label}>{isTelugu ? 'చేరిన తేదీ' : 'Date of Joining'}</Text>
+               <View style={styles.inputWithIcon}>
+                 <TextInput 
+                   style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0, backgroundColor: 'transparent' }]} 
+                   value={doj} 
+                   onChangeText={setDoj} 
+                 />
+                 <MaterialCommunityIcons name="calendar-blank-outline" size={20} color="#94A3B8" style={styles.inputIcon} />
+               </View>
+             </View>
+             <View style={[styles.formGroup, { flex: 1, marginLeft: 8 }]}>
+               <Text style={styles.label}>{isTelugu ? 'స్థితి' : 'Status'}</Text>
+               <TouchableOpacity 
+                 style={styles.dropdown}
+                 onPress={() => setStatus(prev => prev === 'Active' ? 'Inactive' : 'Active')}
+               >
+                 <Text style={styles.inputText}>{status}</Text>
+                 <MaterialCommunityIcons name="chevron-down" size={20} color="#94A3B8" />
+               </TouchableOpacity>
+             </View>
+          </View>
+
+          <View style={styles.sectionDivider} />
+          <Text style={styles.sectionTitle}>{isTelugu ? 'విద్యా అర్హత పత్రాలు' : 'Educational Qualification Documents'}</Text>
+
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>{isTelugu ? 'డిగ్రీ సర్టిఫికేట్' : 'Degree Certificate'}</Text>
+             <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setDegreePhoto)}>
+               <MaterialCommunityIcons name={degreePhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={degreePhoto ? "#10B981" : "#94A3B8"} />
+               <Text style={styles.uploadText}>{degreePhoto ? (isTelugu ? 'పత్రం అప్‌లోడ్ చేయబడింది' : 'Degree Document Uploaded') : (isTelugu ? 'అప్‌లోడ్ చేయడానికి నొక్కండి' : 'Tap to upload Photo')}</Text>
+             </TouchableOpacity>
+             {degreePhoto ? <Image source={{uri: degreePhoto}} style={styles.previewImage} /> : null}
+          </View>
+
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>{isTelugu ? 'ఇంటర్ / డిప్లొమా సర్టిఫికేట్' : 'Inter / Diploma Certificate'}</Text>
+             <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setInterDiplomaPhoto)}>
+               <MaterialCommunityIcons name={interDiplomaPhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={interDiplomaPhoto ? "#10B981" : "#94A3B8"} />
+               <Text style={styles.uploadText}>{interDiplomaPhoto ? (isTelugu ? 'పత్రం అప్‌లోడ్ చేయబడింది' : 'Inter/Diploma Document Uploaded') : (isTelugu ? 'అప్‌లోడ్ చేయడానికి నొక్కండి' : 'Tap to upload Photo')}</Text>
+             </TouchableOpacity>
+             {interDiplomaPhoto ? <Image source={{uri: interDiplomaPhoto}} style={styles.previewImage} /> : null}
+          </View>
+
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>{isTelugu ? '10వ సర్టిఫికేట్' : '10th Certificate'}</Text>
+             <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setTenthPhoto)}>
+               <MaterialCommunityIcons name={tenthPhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={tenthPhoto ? "#10B981" : "#94A3B8"} />
+               <Text style={styles.uploadText}>{tenthPhoto ? (isTelugu ? 'పత్రం అప్‌లోడ్ చేయబడింది' : '10th Document Uploaded') : (isTelugu ? 'అప్‌లోడ్ చేయడానికి నొక్కండి' : 'Tap to upload Photo')}</Text>
+             </TouchableOpacity>
+             {tenthPhoto ? <Image source={{uri: tenthPhoto}} style={styles.previewImage} /> : null}
+          </View>
+
+          <View style={{ height: 100 }} />
+        </ScrollView>
+
+        {/* Floating Save Button */}
+        <View style={styles.fabContainer}>
+           <TouchableOpacity 
+             style={styles.fabButton}
+             onPress={handleSave}
+           >
+              <Text style={styles.fabText}>{isTelugu ? 'ఫ్యాకల్టీని సేవ్ చేయండి' : 'Save Faculty'}</Text>
            </TouchableOpacity>
-           {degreePhoto ? <Image source={{uri: degreePhoto}} style={styles.previewImage} /> : null}
         </View>
 
-        <View style={styles.formGroup}>
-           <Text style={styles.label}>Inter / Diploma Certificate</Text>
-           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setInterDiplomaPhoto)}>
-             <MaterialCommunityIcons name={interDiplomaPhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={interDiplomaPhoto ? "#10B981" : "#6B7280"} />
-             <Text style={styles.uploadText}>{interDiplomaPhoto ? 'Inter/Diploma Document Uploaded' : 'Tap to upload Photo'}</Text>
-           </TouchableOpacity>
-           {interDiplomaPhoto ? <Image source={{uri: interDiplomaPhoto}} style={styles.previewImage} /> : null}
-        </View>
+        {/* Bottom Tab Bar */}
+        <BlurView intensity={40} tint="dark" style={styles.bottomTabBar}>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminHome')}>
+            <MaterialCommunityIcons name="home-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminFeeManagement')}>
+            <MaterialCommunityIcons name="receipt" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Fee{'\n'}Mgmt</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminNotices')}>
+            <MaterialCommunityIcons name="bell-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Notice</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminProfile')}>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Profile</Text>
+          </TouchableOpacity>
+        </BlurView>
 
-        <View style={styles.formGroup}>
-           <Text style={styles.label}>10th Certificate</Text>
-           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setTenthPhoto)}>
-             <MaterialCommunityIcons name={tenthPhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={tenthPhoto ? "#10B981" : "#6B7280"} />
-             <Text style={styles.uploadText}>{tenthPhoto ? '10th Document Uploaded' : 'Tap to upload Photo'}</Text>
-           </TouchableOpacity>
-           {tenthPhoto ? <Image source={{uri: tenthPhoto}} style={styles.previewImage} /> : null}
-        </View>
+        <Modal visible={showDeptModal} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+             <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowDeptModal(false)} activeOpacity={1} />
+             <View style={styles.centerModalContent}>
+                <Text style={styles.modalTitle}>{isTelugu ? 'విభాగాన్ని ఎంచుకోండి' : 'Select Department'}</Text>
+                <FlatList 
+                  data={departments}
+                  keyExtractor={(item) => item}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity style={styles.settingsOption} onPress={() => { setDepartment(item); setShowDeptModal(false); }}>
+                       <Text style={styles.settingsOptionText}>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+             </View>
+          </View>
+        </Modal>
 
-        <View style={{ height: 100 }} />
-      </ScrollView>
-
-      {/* Floating Save Button */}
-      <View style={styles.fabContainer}>
-         <TouchableOpacity 
-           style={styles.fabButton}
-           onPress={handleSave}
-         >
-            <Text style={styles.fabText}>Save Faculty</Text>
-         </TouchableOpacity>
-      </View>
-
-      {/* Bottom Tab Bar */}
-      <View style={styles.bottomTabBar}>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminHome')}>
-          <MaterialCommunityIcons name="home-outline" size={28} color="#4F46E5" />
-          <Text style={[styles.tabLabel, { color: '#4F46E5' }]}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminFeeManagement')}>
-          <MaterialCommunityIcons name="receipt" size={28} color="#9CA3AF" />
-          <Text style={styles.tabLabel}>Fee{'\n'}Management</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminNotices')}>
-          <MaterialCommunityIcons name="bell-outline" size={28} color="#9CA3AF" />
-          <Text style={styles.tabLabel}>Notification</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminProfile')}>
-          <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
-          <Text style={styles.tabLabel}>Profile</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Modal visible={showDeptModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-           <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowDeptModal(false)} activeOpacity={1} />
-           <View style={styles.centerModalContent}>
-              <Text style={styles.modalTitle}>Select Department</Text>
-              <FlatList 
-                data={departments}
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.settingsOption} onPress={() => { setDepartment(item); setShowDeptModal(false); }}>
-                     <Text style={styles.settingsOptionText}>{item}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-           </View>
-        </View>
-      </Modal>
-
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  background: { flex: 1 },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   backButton: { marginRight: 16 },
-  brandTitle: { fontSize: 22, fontWeight: '900', color: '#4F46E5', flex: 1, letterSpacing: 0.5 },
+  brandTitle: { fontSize: 22, fontWeight: '900', color: '#F8FAFC', flex: 1, letterSpacing: 0.5 },
   appBarRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 16,
     height: 32,
     alignItems: 'center',
     padding: 2,
   },
   languageActive: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#8B5CF6',
     borderRadius: 14,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  languageInactive: { paddingHorizontal: 12, justifyContent: 'center' },
-  langTextActive: { color: '#FFFFFF', fontSize: 12, fontWeight: 'bold' },
-  langTextInactive: { color: '#4F46E5', fontSize: 12, fontWeight: '500' },
+  languageInactive: { paddingHorizontal: 10, justifyContent: 'center' },
+  langTextActive: { color: '#F8FAFC', fontSize: 11, fontWeight: 'bold' },
+  langTextInactive: { color: '#9CA3AF', fontSize: 11, fontWeight: '500' },
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 24 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 24 },
 
   avatarSection: { alignItems: 'center', marginBottom: 24 },
   avatarWrapper: { position: 'relative' },
-  avatarImage: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#E5E7EB' },
+  avatarImage: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#334155' },
   cameraButton: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#5B4BCA',
     width: 28,
     height: 28,
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: '#1E293B',
   },
   deleteAvatarButton: {
     position: 'absolute',
@@ -363,30 +366,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: '#1E293B',
   },
 
   row: { flexDirection: 'row' },
   formGroup: { marginBottom: 16 },
-  label: { fontSize: 13, color: '#6B7280', marginBottom: 6 },
+  label: { fontSize: 13, color: '#94A3B8', marginBottom: 6 },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
     fontSize: 15,
-    color: '#111827',
+    color: '#F8FAFC',
   },
-  inputText: { fontSize: 15, color: '#111827' },
+  inputText: { fontSize: 15, color: '#E2E8F0' },
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
@@ -394,9 +397,9 @@ const styles = StyleSheet.create({
   inputWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
@@ -405,72 +408,63 @@ const styles = StyleSheet.create({
 
   fabContainer: { position: 'absolute', bottom: 80, left: 16, right: 16 },
   fabButton: { 
-    backgroundColor: '#4F46E5', 
+    backgroundColor: '#5B4BCA', 
     borderRadius: 30, 
     paddingVertical: 14, 
     alignItems: 'center', 
     justifyContent: 'center',
-    shadowColor: '#4F46E5', 
+    shadowColor: '#5B4BCA', 
     shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.3, 
+    shadowOpacity: 0.5, 
     shadowRadius: 8, 
     elevation: 4 
   },
   fabText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
 
-  bottomTabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
+  bottomTabBar: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', position: 'absolute', bottom: 0, width: '100%' },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
-  sectionDivider: { height: 1, backgroundColor: '#E5E7EB', marginVertical: 16 },
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  tabLabel: { fontSize: 10, color: '#94A3B8', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  sectionDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 16 },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
   uploadBox: {
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: '#D1D5DB',
+    borderColor: 'rgba(255,255,255,0.2)',
     borderRadius: 12,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  uploadText: { marginLeft: 8, fontSize: 14, color: '#4B5563' },
+  uploadText: { marginLeft: 8, fontSize: 14, color: '#94A3B8' },
   previewImage: { width: '100%', height: 120, borderRadius: 8, marginTop: 8, resizeMode: 'cover' },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   centerModalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#1E293B',
     borderRadius: 24,
     padding: 24,
     width: '100%',
     maxWidth: 340,
     maxHeight: '80%',
+    borderWidth: 1,
+    borderColor: '#5B4BCA',
   },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16, textAlign: 'center' },
   settingsOption: {
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   settingsOptionText: {
     fontSize: 15,
-    color: '#1F2937',
+    color: '#E2E8F0',
     fontWeight: '500',
     textAlign: 'center'
   },

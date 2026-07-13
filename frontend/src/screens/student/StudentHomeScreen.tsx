@@ -3,12 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
   Modal,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -22,6 +22,7 @@ interface Props {
 }
 
 export default function StudentHomeScreen({ navigation }: Props) {
+  const insets = useSafeAreaInsets();
   const { isTelugu, setIsTelugu } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -165,7 +166,7 @@ export default function StudentHomeScreen({ navigation }: Props) {
         </ScrollView>
 
         {/* Bottom Tab Bar (Fixed) */}
-        <BlurView intensity={40} tint="dark" style={[styles.bottomTabBar, { borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)' }]}>
+        <BlurView intensity={40} tint="dark" style={[styles.bottomTabBar, { borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', paddingBottom: Math.max(insets.bottom, 12) }]}>
           <TouchableOpacity style={styles.tabItem}>
             <MaterialCommunityIcons name="home" size={28} color="#A855F7" />
             <Text style={[styles.tabLabel, { color: '#A855F7' }]}>{isTelugu ? 'హోమ్' : 'Home'}</Text>

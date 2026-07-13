@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 type FacultyAttendanceNavigationProp = NativeStackNavigationProp<RootStackParamList, 'FacultyAttendance'>;
 interface Props {
@@ -104,339 +107,336 @@ export default function FacultyAttendanceScreen({ navigation }: Props) {
   const late = students.filter(s => s.status === 'Late').length;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Attendance</Text>
-        <View style={styles.headerRight}>
-          <View style={styles.languageToggle}>
-            <TouchableOpacity onPress={() => setIsTelugu(false)} style={!isTelugu ? styles.languageActive : styles.languageInactive}>
-              <Text style={!isTelugu ? styles.langTextActive : styles.langTextInactive}>English</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsTelugu(true)} style={isTelugu ? styles.languageActive : styles.languageInactive}>
-              <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>Telugu</Text>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
+        
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <MaterialCommunityIcons name="menu" size={24} color="#E0E7FF" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{isTelugu ? 'హాజరు' : 'Attendance'}</Text>
+          <View style={styles.headerRight}>
+            <View style={styles.languageToggle}>
+              <TouchableOpacity onPress={() => setIsTelugu(false)} style={!isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={!isTelugu ? styles.langTextActive : styles.langTextInactive}>EN</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsTelugu(true)} style={isTelugu ? styles.languageActive : styles.languageInactive}>
+                <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>TE</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('FacultySettings')}>
+               <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('FacultySettings')}>
-             <MaterialCommunityIcons name="cog-outline" size={24} color="#9CA3AF" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        
-        {/* Date Selector */}
-        <View style={styles.dateSelector}>
-          <TouchableOpacity onPress={handlePrevDate}>
-            <MaterialCommunityIcons name="chevron-left" size={24} color="#6B7280" />
-          </TouchableOpacity>
-          <Text style={styles.dateText}>{formatDate(currentDate)}</Text>
-          <TouchableOpacity onPress={handleNextDate}>
-            <MaterialCommunityIcons name="chevron-right" size={24} color="#6B7280" />
-          </TouchableOpacity>
         </View>
 
-        {/* Class Dropdown */}
-        <TouchableOpacity 
-          style={styles.classDropdown} 
-          activeOpacity={0.8}
-          onPress={() => {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-            setShowClassDropdown(!showClassDropdown);
-          }}
-        >
-          <Text style={styles.classDropdownText}>{selectedClass}</Text>
-          <MaterialCommunityIcons name={showClassDropdown ? "chevron-up" : "chevron-down"} size={20} color="#6B7280" />
-        </TouchableOpacity>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          
+          {/* Date Selector */}
+          <View style={styles.dateSelector}>
+            <TouchableOpacity onPress={handlePrevDate}>
+              <MaterialCommunityIcons name="chevron-left" size={28} color="#A78BFA" />
+            </TouchableOpacity>
+            <Text style={styles.dateText}>{formatDate(currentDate)}</Text>
+            <TouchableOpacity onPress={handleNextDate}>
+              <MaterialCommunityIcons name="chevron-right" size={28} color="#A78BFA" />
+            </TouchableOpacity>
+          </View>
 
-        {showClassDropdown && (
-          <View style={styles.dropdownMenu}>
-            {classes.map((cls) => (
-              <TouchableOpacity 
-                key={cls} 
-                style={styles.dropdownItem}
-                onPress={() => {
-                  setSelectedClass(cls);
-                  setShowClassDropdown(false);
-                }}
-              >
-                <Text style={styles.dropdownItemText}>{cls}</Text>
+          {/* Class Dropdown */}
+          <TouchableOpacity 
+            style={styles.classDropdown} 
+            activeOpacity={0.8}
+            onPress={() => {
+              LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+              setShowClassDropdown(!showClassDropdown);
+            }}
+          >
+            <Text style={styles.classDropdownText}>{selectedClass}</Text>
+            <MaterialCommunityIcons name={showClassDropdown ? "chevron-up" : "chevron-down"} size={24} color="#A78BFA" />
+          </TouchableOpacity>
+
+          {showClassDropdown && (
+            <BlurView intensity={40} tint="dark" style={styles.dropdownMenu}>
+              {classes.map((cls) => (
+                <TouchableOpacity 
+                  key={cls} 
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedClass(cls);
+                    setShowClassDropdown(false);
+                  }}
+                >
+                  <Text style={styles.dropdownItemText}>{cls}</Text>
+                </TouchableOpacity>
+              ))}
+            </BlurView>
+          )}
+
+          {/* Summary Cards */}
+          <View style={styles.summaryRow}>
+            <BlurView intensity={20} tint="dark" style={[styles.summaryCard, { borderColor: '#3B82F6', shadowColor: '#3B82F6' }]}>
+               <Text style={styles.summaryLabel}>Total</Text>
+               <Text style={[styles.summaryValue, { color: '#93C5FD' }]}>{total}</Text>
+            </BlurView>
+            <BlurView intensity={20} tint="dark" style={[styles.summaryCard, { borderColor: '#10B981', shadowColor: '#10B981' }]}>
+               <Text style={styles.summaryLabel}>Present</Text>
+               <Text style={[styles.summaryValue, { color: '#6EE7B7' }]}>{present}</Text>
+            </BlurView>
+            <BlurView intensity={20} tint="dark" style={[styles.summaryCard, { borderColor: '#EF4444', shadowColor: '#EF4444' }]}>
+               <Text style={styles.summaryLabel}>Absent</Text>
+               <Text style={[styles.summaryValue, { color: '#FCA5A5' }]}>{absent}</Text>
+            </BlurView>
+            <BlurView intensity={20} tint="dark" style={[styles.summaryCard, { borderColor: '#F59E0B', shadowColor: '#F59E0B' }]}>
+               <Text style={styles.summaryLabel}>Late</Text>
+               <Text style={[styles.summaryValue, { color: '#FDE047' }]}>{late}</Text>
+            </BlurView>
+          </View>
+
+          {/* Mark All As */}
+          <BlurView intensity={20} tint="dark" style={styles.markAllContainer}>
+            <Text style={styles.markAllText}>Mark All As:</Text>
+            <View style={styles.markAllButtons}>
+              <TouchableOpacity style={[styles.markAllBtn, { backgroundColor: '#10B981' }]} onPress={() => handleMarkAll('Present')}>
+                <Text style={styles.markAllBtnText}>P</Text>
               </TouchableOpacity>
+              <TouchableOpacity style={[styles.markAllBtn, { backgroundColor: '#EF4444' }]} onPress={() => handleMarkAll('Absent')}>
+                <Text style={styles.markAllBtnText}>A</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.markAllBtn, { backgroundColor: '#F59E0B' }]} onPress={() => handleMarkAll('Late')}>
+                <Text style={styles.markAllBtnText}>L</Text>
+              </TouchableOpacity>
+            </View>
+          </BlurView>
+
+          {/* Legend */}
+          <View style={styles.legendRow}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: '#10B981' }]} />
+              <Text style={styles.legendText}>Present</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: '#EF4444' }]} />
+              <Text style={styles.legendText}>Absent</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: '#F59E0B' }]} />
+              <Text style={styles.legendText}>Late</Text>
+            </View>
+          </View>
+
+          {/* Student List */}
+          <View style={styles.studentList}>
+            {students.map((student) => (
+              <View key={student.id} style={styles.studentRow}>
+                <Text style={styles.rollNo}>{student.rollNo}</Text>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>{student.name.charAt(0)}</Text>
+                </View>
+                <Text style={styles.studentName}>{student.name}</Text>
+                
+                <View style={styles.statusToggles}>
+                  <TouchableOpacity 
+                    style={[styles.toggleBtn, student.status === 'Present' ? { backgroundColor: '#10B981' } : null]} 
+                    onPress={() => handleToggleStudent(student.id, 'Present')}
+                  >
+                    <Text style={[styles.toggleText, student.status === 'Present' ? { color: '#FFF' } : null]}>P</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.toggleBtn, student.status === 'Absent' ? { backgroundColor: '#EF4444' } : null]} 
+                    onPress={() => handleToggleStudent(student.id, 'Absent')}
+                  >
+                    <Text style={[styles.toggleText, student.status === 'Absent' ? { color: '#FFF' } : null]}>A</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.toggleBtn, student.status === 'Late' ? { backgroundColor: '#F59E0B' } : null]} 
+                    onPress={() => handleToggleStudent(student.id, 'Late')}
+                  >
+                    <Text style={[styles.toggleText, student.status === 'Late' ? { color: '#FFF' } : null]}>L</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             ))}
+          </View>
+
+          <View style={{ height: 100 }} />
+        </ScrollView>
+
+        {/* Save Button */}
+        <View style={styles.saveContainer}>
+          <TouchableOpacity 
+            style={[styles.saveButton, (isPast || isFuture) && styles.saveButtonDisabled]}
+            disabled={isPast || isFuture}
+            onPress={() => setShowSaveOptions(true)}
+          >
+            <Text style={styles.saveButtonText}>{isTelugu ? 'సేవ్ చేయండి' : 'Save Attendance'}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Bottom Tab Bar */}
+        <BlurView intensity={40} tint="dark" style={styles.bottomTabBar}>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyHome')}>
+            <MaterialCommunityIcons name="home-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyTimeTable')}>
+            <MaterialCommunityIcons name="calendar-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Time Table</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyNotices')}>
+            <MaterialCommunityIcons name="bell-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Notification</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultySettings')}>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
+            <Text style={styles.tabLabel}>Profile</Text>
+          </TouchableOpacity>
+        </BlurView>
+
+        {/* Save Options Popup */}
+        {showSaveOptions && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
+            <View style={styles.modalOverlay}>
+              <BlurView intensity={40} tint="dark" style={styles.modalContent}>
+                <Text style={styles.modalTitle}>{isTelugu ? 'ఆప్షన్ ఎంచుకోండి' : 'Select Option'}</Text>
+                <TouchableOpacity 
+                  style={styles.modalButtonPrimary}
+                  onPress={() => {
+                    setShowSaveOptions(false);
+                    setShowSuccessModal(true);
+                  }}
+                >
+                  <Text style={styles.modalButtonTextPrimary}>{isTelugu ? 'హాజరును గుర్తించండి' : 'Mark Attendance'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.modalButtonSecondary}
+                  onPress={() => setShowSaveOptions(false)}
+                >
+                  <Text style={styles.modalButtonTextSecondary}>{isTelugu ? 'హాజరును సవరించండి' : 'Edit Attendance'}</Text>
+                </TouchableOpacity>
+              </BlurView>
+            </View>
           </View>
         )}
 
-        {/* Summary Cards */}
-        <View style={styles.summaryRow}>
-          <View style={styles.summaryCard}>
-             <Text style={styles.summaryLabel}>Total</Text>
-             <Text style={[styles.summaryValue, { color: '#111827' }]}>{total}</Text>
-          </View>
-          <View style={styles.summaryCard}>
-             <Text style={styles.summaryLabel}>Present</Text>
-             <Text style={[styles.summaryValue, { color: '#10B981' }]}>{present}</Text>
-          </View>
-          <View style={styles.summaryCard}>
-             <Text style={styles.summaryLabel}>Absent</Text>
-             <Text style={[styles.summaryValue, { color: '#EF4444' }]}>{absent}</Text>
-          </View>
-          <View style={styles.summaryCard}>
-             <Text style={styles.summaryLabel}>Late</Text>
-             <Text style={[styles.summaryValue, { color: '#F59E0B' }]}>{late}</Text>
-          </View>
-        </View>
-
-        {/* Mark All As */}
-        <View style={styles.markAllContainer}>
-          <Text style={styles.markAllText}>Mark All As:</Text>
-          <View style={styles.markAllButtons}>
-            <TouchableOpacity style={[styles.markAllBtn, { backgroundColor: '#22C55E' }]} onPress={() => handleMarkAll('Present')}>
-              <Text style={styles.markAllBtnText}>Present</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.markAllBtn, { backgroundColor: '#EF4444' }]} onPress={() => handleMarkAll('Absent')}>
-              <Text style={styles.markAllBtnText}>Absent</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.markAllBtn, { backgroundColor: '#F59E0B' }]} onPress={() => handleMarkAll('Late')}>
-              <Text style={styles.markAllBtnText}>Late</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Legend */}
-        <View style={styles.legendRow}>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: '#22C55E' }]} />
-            <Text style={styles.legendText}>Present</Text>
-          </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: '#EF4444' }]} />
-            <Text style={styles.legendText}>Absent</Text>
-          </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: '#F59E0B' }]} />
-            <Text style={styles.legendText}>Late</Text>
-          </View>
-        </View>
-
-        {/* Student List */}
-        <View style={styles.studentList}>
-          {students.map((student) => (
-            <View key={student.id} style={styles.studentRow}>
-              <Text style={styles.rollNo}>{student.rollNo}</Text>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{student.name.charAt(0)}</Text>
-              </View>
-              <Text style={styles.studentName}>{student.name}</Text>
-              
-              <View style={styles.statusToggles}>
+        {/* Success Popup */}
+        {showSuccessModal && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
+            <View style={styles.modalOverlay}>
+              <BlurView intensity={40} tint="dark" style={styles.modalContent}>
+                <MaterialCommunityIcons name="check-circle" size={60} color="#10B981" style={{marginBottom: 16}} />
+                <Text style={styles.modalTitle}>{isTelugu ? 'విజయం!' : 'Success!'}</Text>
+                <Text style={styles.modalMessage}>
+                  {isTelugu ? 'హాజరు విజయవంతంగా అప్‌లోడ్ చేయబడింది.' : 'Attendance uploaded successfully.'}
+                </Text>
                 <TouchableOpacity 
-                  style={[styles.toggleBtn, student.status === 'Present' ? { backgroundColor: '#22C55E' } : null]} 
-                  onPress={() => handleToggleStudent(student.id, 'Present')}
+                  style={styles.modalButtonPrimary}
+                  onPress={() => {
+                    setShowSuccessModal(false);
+                    navigation.navigate('FacultyHome');
+                  }}
                 >
-                  <Text style={[styles.toggleText, student.status === 'Present' ? { color: '#FFF' } : null]}>P</Text>
+                  <Text style={styles.modalButtonTextPrimary}>{isTelugu ? 'సరే' : 'OK'}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                  style={[styles.toggleBtn, student.status === 'Absent' ? { backgroundColor: '#EF4444' } : null]} 
-                  onPress={() => handleToggleStudent(student.id, 'Absent')}
-                >
-                  <Text style={[styles.toggleText, student.status === 'Absent' ? { color: '#FFF' } : null]}>A</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={[styles.toggleBtn, student.status === 'Late' ? { backgroundColor: '#F59E0B' } : null]} 
-                  onPress={() => handleToggleStudent(student.id, 'Late')}
-                >
-                  <Text style={[styles.toggleText, student.status === 'Late' ? { color: '#FFF' } : null]}>L</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        <View style={{ height: 100 }} />
-      </ScrollView>
-
-      {/* Save Button */}
-      <View style={styles.saveContainer}>
-        <TouchableOpacity 
-          style={[styles.saveButton, (isPast || isFuture) && styles.saveButtonDisabled]}
-          disabled={isPast || isFuture}
-          onPress={() => setShowSaveOptions(true)}
-        >
-          <Text style={styles.saveButtonText}>{isTelugu ? 'సేవ్ చేయండి' : 'Save Attendance'}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Bottom Tab Bar */}
-      <View style={styles.bottomTabBar}>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyHome')}>
-          <MaterialCommunityIcons name="home-outline" size={28} color="#5B4BCA" />
-          <Text style={[styles.tabLabel, {color: '#5B4BCA'}]}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyTimeTable')}>
-          <MaterialCommunityIcons name="calendar-outline" size={28} color="#9CA3AF" />
-          <Text style={styles.tabLabel}>Time Table</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyNotices')}>
-          <MaterialCommunityIcons name="bell-outline" size={28} color="#9CA3AF" />
-          <Text style={styles.tabLabel}>Notification</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultySettings')}>
-          <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
-          <Text style={styles.tabLabel}>Profile</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Save Options Popup */}
-      {showSaveOptions && (
-        <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>{isTelugu ? 'ఆప్షన్ ఎంచుకోండి' : 'Select Option'}</Text>
-              <TouchableOpacity 
-                style={styles.modalButtonPrimary}
-                onPress={() => {
-                  setShowSaveOptions(false);
-                  setShowSuccessModal(true);
-                }}
-              >
-                <Text style={styles.modalButtonTextPrimary}>{isTelugu ? 'హాజరును గుర్తించండి' : 'Mark Attendance'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.modalButtonSecondary}
-                onPress={() => setShowSaveOptions(false)}
-              >
-                <Text style={styles.modalButtonTextSecondary}>{isTelugu ? 'హాజరును సవరించండి' : 'Edit Attendance'}</Text>
-              </TouchableOpacity>
+              </BlurView>
             </View>
           </View>
-        </View>
-      )}
+        )}
 
-      {/* Success Popup */}
-      {showSuccessModal && (
-        <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <MaterialCommunityIcons name="check-circle" size={60} color="#10B981" style={{marginBottom: 16}} />
-              <Text style={styles.modalTitle}>{isTelugu ? 'విజయం!' : 'Success!'}</Text>
-              <Text style={styles.modalMessage}>
-                {isTelugu ? 'హాజరు విజయవంతంగా అప్‌లోడ్ చేయబడింది.' : 'Attendance uploaded successfully.'}
-              </Text>
-              <TouchableOpacity 
-                style={styles.modalButtonPrimary}
-                onPress={() => {
-                  setShowSuccessModal(false);
-                  navigation.navigate('FacultyHome');
-                }}
-              >
-                <Text style={styles.modalButtonTextPrimary}>{isTelugu ? 'సరే' : 'OK'}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
-
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  background: { flex: 1 },
+  safeArea: { flex: 1 },
   
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   backButton: { marginRight: 16 },
-  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', flex: 1 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', flex: 1 },
   headerRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 16,
     height: 32,
     alignItems: 'center',
     padding: 2,
   },
   languageActive: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#8B5CF6',
     borderRadius: 14,
     paddingHorizontal: 10,
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
   },
   languageInactive: { paddingHorizontal: 10, justifyContent: 'center' },
-  langTextActive: { color: '#5B4BCA', fontSize: 11, fontWeight: 'bold' },
-  langTextInactive: { color: '#6B7280', fontSize: 11, fontWeight: '500' },
+  langTextActive: { color: '#F8FAFC', fontSize: 11, fontWeight: 'bold' },
+  langTextInactive: { color: '#9CA3AF', fontSize: 11, fontWeight: '500' },
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 60 },
 
   dateSelector: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingHorizontal: 16 },
-  dateText: { fontSize: 16, fontWeight: 'bold', color: '#111827' },
+  dateText: { fontSize: 18, fontWeight: 'bold', color: '#F8FAFC' },
 
-  classDropdown: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, marginBottom: 16 },
-  classDropdownText: { fontSize: 15, color: '#374151', fontWeight: '500' },
-  dropdownMenu: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, paddingVertical: 8, marginBottom: 16, marginTop: -8 },
-  dropdownItem: { paddingVertical: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
-  dropdownItemText: { fontSize: 15, color: '#374151' },
+  classDropdown: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: '#8B5CF6', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, marginBottom: 16, backgroundColor: 'rgba(15, 23, 42, 0.7)' },
+  classDropdownText: { fontSize: 15, color: '#F8FAFC', fontWeight: '500' },
+  dropdownMenu: { borderWidth: 1, borderColor: '#8B5CF6', borderRadius: 12, paddingVertical: 8, marginBottom: 16, marginTop: -8, overflow: 'hidden' },
+  dropdownItem: { paddingVertical: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)' },
+  dropdownItemText: { fontSize: 15, color: '#E2E8F0' },
 
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  summaryCard: { flex: 1, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F3F4F6', borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginHorizontal: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 1 },
+  summaryCard: { flex: 1, borderWidth: 1, borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginHorizontal: 4, shadowOpacity: 0.6, shadowRadius: 8, elevation: 4, overflow: 'hidden' },
   summaryLabel: { fontSize: 12, color: '#9CA3AF', marginBottom: 4, fontWeight: '500' },
   summaryValue: { fontSize: 20, fontWeight: 'bold' },
 
-  markAllContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#F9FAFB', padding: 12, borderRadius: 12, marginBottom: 16 },
-  markAllText: { fontSize: 14, fontWeight: '600', color: '#111827' },
+  markAllContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 12, marginBottom: 16, borderWidth: 1, borderColor: '#4F46E5', overflow: 'hidden' },
+  markAllText: { fontSize: 14, fontWeight: '600', color: '#E2E8F0' },
   markAllButtons: { flexDirection: 'row' },
-  markAllBtn: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginLeft: 8 },
+  markAllBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, marginLeft: 8 },
   markAllBtnText: { color: '#FFF', fontSize: 12, fontWeight: 'bold' },
 
   legendRow: { flexDirection: 'row', marginBottom: 16, paddingHorizontal: 4 },
   legendItem: { flexDirection: 'row', alignItems: 'center', marginRight: 16 },
   legendDot: { width: 10, height: 10, borderRadius: 5, marginRight: 6 },
-  legendText: { fontSize: 13, color: '#6B7280' },
+  legendText: { fontSize: 13, color: '#9CA3AF' },
 
-  studentList: { borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingTop: 8 },
-  studentRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  studentList: { borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 8 },
+  studentRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
   rollNo: { width: 24, fontSize: 13, color: '#9CA3AF' },
-  avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  avatarText: { fontSize: 16, fontWeight: 'bold', color: '#111827' },
-  studentName: { flex: 1, fontSize: 15, color: '#111827', fontWeight: '500' },
+  avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(139, 92, 246, 0.2)', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  avatarText: { fontSize: 16, fontWeight: 'bold', color: '#A78BFA' },
+  studentName: { flex: 1, fontSize: 15, color: '#F8FAFC', fontWeight: '500' },
   
   statusToggles: { flexDirection: 'row' },
-  toggleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
+  toggleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.1)', justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
   toggleText: { fontSize: 13, fontWeight: 'bold', color: '#9CA3AF' },
 
-  saveContainer: { position: 'absolute', bottom: 70, left: 16, right: 16 },
-  saveButton: { backgroundColor: '#4F46E5', borderRadius: 12, paddingVertical: 16, alignItems: 'center', shadowColor: '#4F46E5', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
-  saveButtonDisabled: { backgroundColor: '#9CA3AF', shadowOpacity: 0, elevation: 0 },
+  saveContainer: { position: 'absolute', bottom: 80, left: 16, right: 16 },
+  saveButton: { backgroundColor: '#4F46E5', borderRadius: 12, paddingVertical: 16, alignItems: 'center', shadowColor: '#4F46E5', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 8, elevation: 4 },
+  saveButtonDisabled: { backgroundColor: 'rgba(255,255,255,0.2)', shadowOpacity: 0, elevation: 0 },
   saveButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
 
-  bottomTabBar: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 10, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#F3F4F6', position: 'absolute', bottom: 0, width: '100%' },
+  bottomTabBar: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', position: 'absolute', bottom: 0, width: '100%' },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#6B7280', marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 11, color: '#94A3B8', marginTop: 4, fontWeight: '500' },
 
   // Modals
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 },
-  modalContent: { backgroundColor: '#FFFFFF', borderRadius: 24, padding: 32, alignItems: 'center', width: '100%', maxWidth: 340, shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2, shadowRadius: 20, elevation: 10 },
-  modalTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
-  modalMessage: { fontSize: 15, color: '#6B7280', textAlign: 'center', marginBottom: 24, lineHeight: 22 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  modalContent: { borderRadius: 24, padding: 32, alignItems: 'center', width: '100%', maxWidth: 340, borderWidth: 1, borderColor: '#8B5CF6', overflow: 'hidden' },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16, textAlign: 'center' },
+  modalMessage: { fontSize: 15, color: '#CBD5E1', textAlign: 'center', marginBottom: 24, lineHeight: 22 },
   modalButtonPrimary: { backgroundColor: '#4F46E5', paddingVertical: 14, paddingHorizontal: 24, borderRadius: 12, width: '100%', alignItems: 'center', marginBottom: 12 },
   modalButtonTextPrimary: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
-  modalButtonSecondary: { backgroundColor: '#F3F4F6', paddingVertical: 14, paddingHorizontal: 24, borderRadius: 12, width: '100%', alignItems: 'center' },
-  modalButtonTextSecondary: { color: '#4F46E5', fontSize: 16, fontWeight: 'bold' },
+  modalButtonSecondary: { backgroundColor: 'rgba(255,255,255,0.1)', paddingVertical: 14, paddingHorizontal: 24, borderRadius: 12, width: '100%', alignItems: 'center' },
+  modalButtonTextSecondary: { color: '#A78BFA', fontSize: 16, fontWeight: 'bold' },
 });

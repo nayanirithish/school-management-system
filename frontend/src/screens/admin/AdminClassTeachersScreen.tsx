@@ -3,14 +3,16 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   Image,
   Modal,
   FlatList
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
@@ -37,12 +39,13 @@ export default function AdminClassTeachersScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
         <View style={styles.appBarRight}>
@@ -75,7 +78,7 @@ export default function AdminClassTeachersScreen({ navigation }: Props) {
                         style={[styles.avatar, !faculty && { opacity: 0.3 }]} 
                       />
                       <View>
-                         <Text style={[styles.teacherName, !faculty && { color: '#9CA3AF' }]}>
+                         <Text style={[styles.teacherName, !faculty && { color: '#64748B' }]}>
                            {faculty ? faculty.name : 'Unassigned'}
                          </Text>
                          {faculty && <Text style={styles.teacherDept}>{faculty.dept}</Text>}
@@ -131,13 +134,13 @@ export default function AdminClassTeachersScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -166,13 +169,13 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827' },
-  subtitle: { fontSize: 14, color: '#6B7280', marginBottom: 24, marginTop: 4 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC' },
+  subtitle: { fontSize: 14, color: '#64748B', marginBottom: 24, marginTop: 4 },
 
   listContainer: { paddingBottom: 20 },
   listItem: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
@@ -184,11 +187,11 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   classInfo: { flex: 1 },
-  className: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 12 },
+  className: { fontSize: 16, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 12 },
   teacherRow: { flexDirection: 'row', alignItems: 'center' },
   avatar: { width: 40, height: 40, borderRadius: 20, marginRight: 12, backgroundColor: '#E5E7EB' },
-  teacherName: { fontSize: 14, fontWeight: 'bold', color: '#111827' },
-  teacherDept: { fontSize: 12, color: '#6B7280', marginTop: 2 },
+  teacherName: { fontSize: 14, fontWeight: 'bold', color: '#F8FAFC' },
+  teacherDept: { fontSize: 12, color: '#64748B', marginTop: 2 },
   
   editButton: {
     backgroundColor: '#EEF2FF',
@@ -206,14 +209,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   centerModalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 24,
     padding: 24,
     width: '100%',
     maxWidth: 360,
     maxHeight: '80%',
   },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16, textAlign: 'center' },
   
   facultyOption: {
     flexDirection: 'row',
@@ -223,8 +226,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F3F4F6',
   },
   facultyOptionAvatar: { width: 40, height: 40, borderRadius: 20, marginRight: 12 },
-  facultyOptionName: { fontSize: 15, fontWeight: 'bold', color: '#111827' },
-  facultyOptionDept: { fontSize: 12, color: '#6B7280' },
+  facultyOptionName: { fontSize: 15, fontWeight: 'bold', color: '#F8FAFC' },
+  facultyOptionDept: { fontSize: 12, color: '#64748B' },
   
   removeOption: {
     flexDirection: 'row',
@@ -238,11 +241,11 @@ const styles = StyleSheet.create({
   removeOptionText: { fontSize: 15, fontWeight: 'bold', color: '#EF4444', marginLeft: 8 },
 
   submitButtonWrapper: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'transparent',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: 12,
   },
-  submitButtonText: { color: '#4B5563', fontSize: 15, fontWeight: 'bold' },
+  submitButtonText: { color: '#CBD5E1', fontSize: 15, fontWeight: 'bold' },
 });

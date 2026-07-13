@@ -3,12 +3,12 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   TextInput,
   Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -37,7 +37,7 @@ export default function AdminSubjectsScreen({ navigation }: Props) {
         {/* Top App Bar */}
         <BlurView intensity={40} tint="dark" style={styles.appBar}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="arrow-left" size={28} color="#FFFFFF" />
+            <MaterialCommunityIcons name="menu" size={28} color="#FFFFFF" />
           </TouchableOpacity>
           <Text style={styles.brandTitle}>Subjects</Text>
           <TouchableOpacity onPress={() => {}}>
@@ -305,5 +305,5 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#9CA3AF', marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 11, color: '#64748B', marginTop: 4, fontWeight: '500' },
 });

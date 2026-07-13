@@ -68,6 +68,7 @@ import { ThemeProvider } from './src/context/ThemeContext';
 import { LanguageProvider } from './src/context/LanguageContext';
 import { FacultyPreferencesProvider } from './src/context/FacultyPreferencesContext';
 import MobileAppWrapper from './src/components/MobileAppWrapper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -188,78 +189,82 @@ const linking = {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AdminProvider>
-        <LanguageProvider>
-          <FacultyPreferencesProvider>
-            <MobileAppWrapper>
-            <NavigationContainer linking={linking}>
-              <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Splash">
-              <Stack.Screen name="Splash" component={SplashScreen} />
-              <Stack.Screen name="Login" component={LoginScreen} />
-              <Stack.Screen name="Register" component={RegisterScreen} />
-              
-              {/* Student Screens */}
-              <Stack.Screen name="StudentHome" component={StudentHomeScreen} />
-              <Stack.Screen name="FeeSection" component={FeeSectionScreen} />
-              <Stack.Screen name="ExamNotifications" component={ExamNotificationsScreen} />
-              <Stack.Screen name="StudentProfile" component={StudentProfileScreen} />
-              <Stack.Screen name="Attendance" component={AttendanceScreen} />
-              <Stack.Screen name="BusTracker" component={BusTrackerScreen} />
-              <Stack.Screen name="Diary" component={DiaryScreen} />
-              <Stack.Screen name="Results" component={ResultsScreen} />
-              <Stack.Screen name="TimeTable" component={TimeTableScreen} />
-              <Stack.Screen name="LeaveApplication" component={LeaveApplicationScreen} />
-              <Stack.Screen name="StudyMaterials" component={StudyMaterialsScreen} />
-              <Stack.Screen name="Feedback" component={FeedbackScreen} />
-              <Stack.Screen name="StudentSettings" component={StudentSettingsScreen} />
-              <Stack.Screen name="AchievementWallet" component={AchievementWalletScreen} />
-              <Stack.Screen name="StudentAssignments" component={StudentAssignmentsScreen} />
-              <Stack.Screen name="StudentSportsAchievements" component={StudentSportsAchievementsScreen} />
-              <Stack.Screen name="StudentNotices" component={StudentNoticesScreen} />
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AdminProvider>
+          <LanguageProvider>
+            <FacultyPreferencesProvider>
+              <MobileAppWrapper>
+              <NavigationContainer linking={linking}>
+                <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Splash">
+                <Stack.Screen name="Splash" component={SplashScreen} />
+                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="Register" component={RegisterScreen} />
+                
+                {/* Student Screens */}
+                <Stack.Screen name="StudentHome" component={StudentHomeScreen} />
+                <Stack.Screen name="FeeSection" component={FeeSectionScreen} />
+                <Stack.Screen name="ExamNotifications" component={ExamNotificationsScreen} />
+                <Stack.Screen name="StudentProfile" component={StudentProfileScreen} />
+                <Stack.Screen name="Attendance" component={AttendanceScreen} />
+                <Stack.Screen name="BusTracker" component={BusTrackerScreen} />
+                <Stack.Screen name="Diary" component={DiaryScreen} />
+                <Stack.Screen name="Results" component={ResultsScreen} />
+                <Stack.Screen name="TimeTable" component={TimeTableScreen} />
+                <Stack.Screen name="LeaveApplication" component={LeaveApplicationScreen} />
+                <Stack.Screen name="StudyMaterials" component={StudyMaterialsScreen} />
+                <Stack.Screen name="Feedback" component={FeedbackScreen} />
+                <Stack.Screen name="StudentSettings" component={StudentSettingsScreen} />
+                <Stack.Screen name="AchievementWallet" component={AchievementWalletScreen} />
+                <Stack.Screen name="StudentAssignments" component={StudentAssignmentsScreen} />
+                <Stack.Screen name="StudentSportsAchievements" component={StudentSportsAchievementsScreen} />
+                <Stack.Screen name="StudentNotices" component={StudentNoticesScreen} />
 
-              {/* Faculty Screens */}
-              <Stack.Screen name="FacultyHome" component={FacultyHomeScreen} />
-              <Stack.Screen name="FacultyMaterialUpload" component={FacultyMaterialUploadScreen} />
-              <Stack.Screen name="FacultyAssignments" component={FacultyAssignmentsScreen} />
-              <Stack.Screen name="FacultyAttendance" component={FacultyAttendanceScreen} />
-              <Stack.Screen name="FacultyPeriodSwapping" component={FacultyPeriodSwappingScreen} />
-              <Stack.Screen name="FacultySyllabusCovered" component={FacultySyllabusCoveredScreen} />
-              <Stack.Screen name="FacultyTimeTable" component={FacultyTimeTableScreen} />
-              <Stack.Screen name="FacultySettings" component={FacultySettingsScreen} />
-              <Stack.Screen name="FacultyProfile" component={FacultyProfileScreen} />
-              <Stack.Screen name="FacultyLeaveApply" component={FacultyLeaveApplyScreen} />
-              <Stack.Screen name="FacultyAddNotice" component={FacultyAddNoticeScreen} />
+                {/* Faculty Screens */}
+                <Stack.Screen name="FacultyHome" component={FacultyHomeScreen} />
+                <Stack.Screen name="FacultyMaterialUpload" component={FacultyMaterialUploadScreen} />
+                <Stack.Screen name="FacultyAssignments" component={FacultyAssignmentsScreen} />
+                <Stack.Screen name="FacultyAttendance" component={FacultyAttendanceScreen} />
+                <Stack.Screen name="FacultyPeriodSwapping" component={FacultyPeriodSwappingScreen} />
+                <Stack.Screen name="FacultySyllabusCovered" component={FacultySyllabusCoveredScreen} />
+                <Stack.Screen name="FacultyTimeTable" component={FacultyTimeTableScreen} />
+                <Stack.Screen name="FacultySettings" component={FacultySettingsScreen} />
+                <Stack.Screen name="FacultyProfile" component={FacultyProfileScreen} />
+                <Stack.Screen name="FacultyLeaveApply" component={FacultyLeaveApplyScreen} />
+                <Stack.Screen name="FacultyAddNotice" component={FacultyAddNoticeScreen} />
+                <Stack.Screen name="FacultyNotices" component={FacultyNoticesScreen} />
+                <Stack.Screen name="FacultyComplaints" component={FacultyComplaintsScreen} />
 
-              {/* Admin Screens */}
-              <Stack.Screen name="AdminHome" component={AdminHomeScreen} />
-              <Stack.Screen name="AdminFeeManagement" component={AdminFeeManagementScreen} />
-              <Stack.Screen name="AdminUpdateFeeDetails" component={AdminUpdateFeeDetailsScreen} />
-              <Stack.Screen name="AdminCollectFee" component={AdminCollectFeeScreen} />
-              <Stack.Screen name="AdminStudentManagement" component={AdminStudentManagementScreen} />
-              <Stack.Screen name="AdminAddUpdateStudent" component={AdminAddUpdateStudentScreen} />
-              <Stack.Screen name="AdminFacultyManagement" component={AdminFacultyManagementScreen} />
-              <Stack.Screen name="AdminAddUpdateFaculty" component={AdminAddUpdateFacultyScreen} />
-              <Stack.Screen name="AdminClassTeachers" component={AdminClassTeachersScreen} />
-              <Stack.Screen name="AdminUploadResults" component={AdminUploadResultsScreen} />
-              
-              {/* Faculty Routes */}
-              <Stack.Screen name="AdminAddNotice" component={AdminAddNoticeScreen} />
-              <Stack.Screen name="AdminNotices" component={AdminNoticesScreen} />
-              <Stack.Screen name="AdminProfile" component={AdminProfileScreen} />
-              <Stack.Screen name="AdminClasses" component={AdminClassesScreen} />
-              <Stack.Screen name="AdminSubjects" component={AdminSubjectsScreen} />
-              <Stack.Screen name="AdminReports" component={AdminReportsScreen} />
-              <Stack.Screen name="AdminComplaintManagement" component={AdminComplaintManagementScreen} />
-              <Stack.Screen name="AdminSettings" component={AdminSettingsScreen} />
-              <Stack.Screen name="AdminResults" component={AdminResultsScreen} />
-            </Stack.Navigator>
-            <StatusBar style="auto" />
-          </NavigationContainer>
-          </MobileAppWrapper>
-          </FacultyPreferencesProvider>
-        </LanguageProvider>
-      </AdminProvider>
-    </ThemeProvider>
+                {/* Admin Screens */}
+                <Stack.Screen name="AdminHome" component={AdminHomeScreen} />
+                <Stack.Screen name="AdminFeeManagement" component={AdminFeeManagementScreen} />
+                <Stack.Screen name="AdminUpdateFeeDetails" component={AdminUpdateFeeDetailsScreen} />
+                <Stack.Screen name="AdminCollectFee" component={AdminCollectFeeScreen} />
+                <Stack.Screen name="AdminStudentManagement" component={AdminStudentManagementScreen} />
+                <Stack.Screen name="AdminAddUpdateStudent" component={AdminAddUpdateStudentScreen} />
+                <Stack.Screen name="AdminFacultyManagement" component={AdminFacultyManagementScreen} />
+                <Stack.Screen name="AdminAddUpdateFaculty" component={AdminAddUpdateFacultyScreen} />
+                <Stack.Screen name="AdminClassTeachers" component={AdminClassTeachersScreen} />
+                <Stack.Screen name="AdminUploadResults" component={AdminUploadResultsScreen} />
+                
+                {/* Faculty Routes */}
+                <Stack.Screen name="AdminAddNotice" component={AdminAddNoticeScreen} />
+                <Stack.Screen name="AdminNotices" component={AdminNoticesScreen} />
+                <Stack.Screen name="AdminProfile" component={AdminProfileScreen} />
+                <Stack.Screen name="AdminClasses" component={AdminClassesScreen} />
+                <Stack.Screen name="AdminSubjects" component={AdminSubjectsScreen} />
+                <Stack.Screen name="AdminReports" component={AdminReportsScreen} />
+                <Stack.Screen name="AdminComplaintManagement" component={AdminComplaintManagementScreen} />
+                <Stack.Screen name="AdminSettings" component={AdminSettingsScreen} />
+                <Stack.Screen name="AdminResults" component={AdminResultsScreen} />
+              </Stack.Navigator>
+              <StatusBar style="auto" />
+            </NavigationContainer>
+            </MobileAppWrapper>
+            </FacultyPreferencesProvider>
+          </LanguageProvider>
+        </AdminProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

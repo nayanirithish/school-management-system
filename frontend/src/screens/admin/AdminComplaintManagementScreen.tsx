@@ -3,13 +3,15 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
   TextInput,
   Image
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
@@ -77,12 +79,13 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
+      <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+          <MaterialCommunityIcons name="menu" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
         <View style={styles.appBarRight}>
@@ -123,7 +126,7 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
         <View style={styles.statsRow}>
            <View style={styles.statBox}>
               <Text style={styles.statLabel}>Total</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>{totalCount}</Text>
+              <Text style={[styles.statValue, { color: '#F8FAFC' }]}>{totalCount}</Text>
            </View>
            <View style={styles.statBox}>
               <Text style={styles.statLabel}>Open</Text>
@@ -210,14 +213,14 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
+  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -246,38 +249,38 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  pageTitle: { fontSize: 20, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 16 },
 
   searchRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 48,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     marginRight: 12,
   },
   searchIcon: { marginRight: 8 },
-  searchInput: { flex: 1, fontSize: 15, color: '#111827' },
+  searchInput: { flex: 1, fontSize: 15, color: '#F8FAFC' },
   filterButton: {
     width: 48,
     height: 48,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
 
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   statBox: { 
     flex: 1, 
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: 'rgba(15, 23, 42, 0.5)', 
     borderRadius: 16, 
     padding: 16, 
     alignItems: 'center',
@@ -290,7 +293,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  statLabel: { fontSize: 12, color: '#6B7280', marginBottom: 4 },
+  statLabel: { fontSize: 12, color: '#64748B', marginBottom: 4 },
   statValue: { fontSize: 20, fontWeight: 'bold' },
 
   filterRow: { flexDirection: 'row', marginBottom: 20, paddingRight: 16 },
@@ -298,9 +301,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255,255,255,0.1)',
     marginRight: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -309,12 +312,12 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   filterPillActive: { backgroundColor: '#4F46E5', borderColor: '#4F46E5' },
-  filterText: { fontSize: 14, color: '#4B5563', fontWeight: '500' },
+  filterText: { fontSize: 14, color: '#CBD5E1', fontWeight: '500' },
   filterTextActive: { color: '#FFFFFF' },
 
   listContainer: { paddingBottom: 20 },
   complaintCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 20,
     padding: 16,
     marginBottom: 16,
@@ -329,17 +332,17 @@ const styles = StyleSheet.create({
   cardHeader: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
   avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#E5E7EB', marginRight: 12 },
   userInfo: { flex: 1, justifyContent: 'center' },
-  userName: { fontSize: 15, fontWeight: 'bold', color: '#111827', marginBottom: 2 },
-  userClass: { fontSize: 12, color: '#6B7280' },
+  userName: { fontSize: 15, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 2 },
+  userClass: { fontSize: 12, color: '#64748B' },
   statusPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   statusText: { fontSize: 11, fontWeight: 'bold' },
   
-  complaintTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 12 },
+  complaintTitle: { fontSize: 16, fontWeight: 'bold', color: '#F8FAFC', marginBottom: 12 },
   
   cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   categoryPill: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
   categoryText: { fontSize: 11, fontWeight: '600' },
-  complaintDate: { fontSize: 12, color: '#9CA3AF' },
+  complaintDate: { fontSize: 12, color: '#64748B' },
 
   fabContainer: { position: 'absolute', bottom: 80, left: 16, right: 16 },
   fabButton: { 
@@ -362,7 +365,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
     position: 'absolute',
@@ -370,5 +373,5 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  tabLabel: { fontSize: 10, color: '#64748B', marginTop: 4, fontWeight: '500', textAlign: 'center' },
 });

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Image, Modal, Platform, UIManager, LayoutAnimation } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Modal, Platform, UIManager, LayoutAnimation } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
-import GlassBackground from '../../components/GlassBackground';
-import GlassCard from '../../components/GlassCard';
 import { useLanguage } from '../../context/LanguageContext';
 import { useFacultyPreferences } from '../../context/FacultyPreferencesContext';
 
@@ -21,8 +21,8 @@ if (Platform.OS === 'android') {
 }
 
 export default function FacultyHomeScreen({ navigation }: Props) {
-  const { isFacultyDark, facultyTextSize } = useFacultyPreferences();
-  const isDark = isFacultyDark; 
+  const insets = useSafeAreaInsets();
+  const { facultyTextSize } = useFacultyPreferences();
   
   const scaleFont = (base: number) => {
     if (facultyTextSize === 'Low') return base - 2;
@@ -31,23 +31,17 @@ export default function FacultyHomeScreen({ navigation }: Props) {
   };
 
   const { isTelugu, setIsTelugu } = useLanguage();
-  const [showSettings, setShowSettings] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
-  
-  // Settings sub-modals
-  const [showEditProfile, setShowEditProfile] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const quickAccessItems = [
-    { id: 1, titleEN: 'Attendance', titleTE: 'హాజరు', icon: 'calendar-check', color: '#5B4BCA', route: 'FacultyAttendance' },
-    { id: 2, titleEN: 'Period Swapping', titleTE: 'పీరియడ్ మార్పిడి', icon: 'swap-horizontal', color: '#3B82F6', route: 'FacultyPeriodSwapping' },
-    { id: 3, titleEN: 'Time Table', titleTE: 'టైమ్ టేబుల్', icon: 'clock-outline', color: '#6366F1', route: 'FacultyTimeTable' },
-    { id: 4, titleEN: 'Leave Apply', titleTE: 'సెలవు దరఖాస్తు', icon: 'file-document-outline', color: '#8B5CF6', route: 'FacultyLeaveApply' },
-    { id: 5, titleEN: 'Syllabus Covered', titleTE: 'సిలబస్ పూర్తి', icon: 'book-open-page-variant', color: '#6366F1', route: 'FacultySyllabusCovered' },
-    { id: 6, titleEN: 'Notices', titleTE: 'నోటీసులు', icon: 'bullhorn-outline', color: '#5B4BCA', route: 'FacultyNotices' },
-    { id: 7, titleEN: 'Assignments', titleTE: 'అసైన్‌మెంట్‌లు', icon: 'clipboard-text-outline', color: '#3B82F6', route: 'FacultyAssignments' },
-    { id: 8, titleEN: 'Material Upload', titleTE: 'మెటీరియల్', icon: 'upload', color: '#8B5CF6', route: 'FacultyMaterialUpload' },
+    { id: 1, titleEN: 'Attendance', titleTE: 'హాజరు', icon: 'calendar-check', color: '#3B82F6', route: 'FacultyAttendance' },
+    { id: 2, titleEN: 'Period Swapping', titleTE: 'పీరియడ్ మార్పిడి', icon: 'swap-horizontal', color: '#A855F7', route: 'FacultyPeriodSwapping' },
+    { id: 3, titleEN: 'Time Table', titleTE: 'టైమ్ టేబుల్', icon: 'clock-outline', color: '#10B981', route: 'FacultyTimeTable' },
+    { id: 4, titleEN: 'Leave Apply', titleTE: 'సెలవు దరఖాస్తు', icon: 'file-document-outline', color: '#F97316', route: 'FacultyLeaveApply' },
+    { id: 5, titleEN: 'Syllabus Covered', titleTE: 'సిలబస్ పూర్తి', icon: 'book-open-page-variant', color: '#14B8A6', route: 'FacultySyllabusCovered' },
+    { id: 6, titleEN: 'Notices', titleTE: 'నోటీసులు', icon: 'bullhorn-outline', color: '#6366F1', route: 'FacultyNotices' },
+    { id: 7, titleEN: 'Assignments', titleTE: 'అసైన్‌మెంట్‌లు', icon: 'clipboard-text-outline', color: '#EAB308', route: 'FacultyAssignments' },
+    { id: 8, titleEN: 'Material Upload', titleTE: 'మెటీరియల్', icon: 'upload', color: '#EC4899', route: 'FacultyMaterialUpload' },
     { id: 9, titleEN: 'Complaints', titleTE: 'ఫిర్యాదులు', icon: 'alert-circle-outline', color: '#EF4444', route: 'FacultyComplaints' },
   ];
 
@@ -57,92 +51,97 @@ export default function FacultyHomeScreen({ navigation }: Props) {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: isDark ? '#0f172a' : '#FFFFFF' }}>
+    <LinearGradient colors={['#0F172A', '#1E293B', '#0F172A']} style={styles.background}>
       <SafeAreaView style={styles.safeArea}>
         
         {/* Top App Bar */}
-        <GlassCard style={styles.appBar} intensity={100} styleOverride={{ backgroundColor: isDark ? '#1e293b' : '#FFFFFF', borderRadius: 0, borderBottomWidth: 1, borderBottomColor: isDark ? '#334155' : '#E5E7EB', borderTopWidth: 0, borderLeftWidth: 0, borderRightWidth: 0 }}>
+        <View style={styles.appBar}>
           <TouchableOpacity onPress={() => setShowDrawer(true)}>
-            <MaterialCommunityIcons name="menu" size={28} color="#1F2937" />
+            <MaterialCommunityIcons name="menu" size={28} color="#E0E7FF" />
           </TouchableOpacity>
           <Text style={styles.brandTitle}>ORYOL</Text>
           <View style={styles.appBarRight}>
             <TouchableOpacity 
-              style={[styles.languageToggle, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : '#EEF2FF' }]} 
+              style={styles.languageToggle} 
               onPress={() => setIsTelugu(!isTelugu)}
               activeOpacity={0.8}
             >
-              <View style={[styles.languagePill, !isTelugu ? [styles.languageActive, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : '#E0E7FF' }] : styles.languageInactive]}>
-                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive, { color: !isTelugu ? '#5B4BCA' : (isDark ? '#9CA3AF' : '#6B7280') }]}>English</Text>
+              <View style={[styles.languagePill, !isTelugu ? styles.languageActive : styles.languageInactive]}>
+                 <Text style={[styles.languageText, !isTelugu && styles.languageTextActive]}>EN</Text>
               </View>
-              <View style={[styles.languagePill, isTelugu ? [styles.languageActive, { backgroundColor: isDark ? 'rgba(255,255,255,0.2)' : '#E0E7FF' }] : styles.languageInactive]}>
-                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive, { color: isTelugu ? '#5B4BCA' : (isDark ? '#9CA3AF' : '#6B7280') }]}>Telugu</Text>
+              <View style={[styles.languagePill, isTelugu ? styles.languageActive : styles.languageInactive]}>
+                 <Text style={[styles.languageText, isTelugu && styles.languageTextActive]}>TE</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('FacultySettings')}>
-              <MaterialCommunityIcons name="cog-outline" size={24} color={isDark ? "#D1D5DB" : "#6B7280"} />
+              <MaterialCommunityIcons name="cog-outline" size={24} color="#A78BFA" />
             </TouchableOpacity>
           </View>
-        </GlassCard>
+        </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           
-          {/* Profile Section */}
-          <View style={styles.profileSection}>
+          {/* Profile Card */}
+          <LinearGradient colors={['#4F46E5', '#7C3AED']} start={{x: 0, y: 0}} end={{x: 1, y: 1}} style={styles.profileCard}>
             <View style={styles.profileInfo}>
-              <Text style={[styles.greetingText, { color: isDark ? '#D1D5DB' : '#6B7280', fontSize: scaleFont(14) }]}>{isTelugu ? 'శుభోదయం,' : 'Good Morning,'}</Text>
-              <Text style={[styles.facultyName, { color: isDark ? '#FFFFFF' : '#111827', fontSize: scaleFont(22) }]}>{isTelugu ? 'మిస్టర్ రాహుల్ శర్మ' : 'Mr. Rahul Sharma'}</Text>
-              <Text style={[styles.facultyRole, { color: isDark ? '#9CA3AF' : '#6B7280', fontSize: scaleFont(13) }]}>{isTelugu ? 'కంప్యూటర్ సైన్స్ ఫ్యాకల్టీ' : 'Computer Science Faculty'}</Text>
+              <Text style={[styles.greetingText, { fontSize: scaleFont(14) }]}>{isTelugu ? 'శుభోదయం,' : 'Good Morning,'}</Text>
+              <Text style={[styles.facultyName, { fontSize: scaleFont(22) }]}>{isTelugu ? 'మిస్టర్ రాహుల్ శర్మ' : 'Mr. Rahul Sharma'}</Text>
+              <Text style={[styles.facultyRole, { fontSize: scaleFont(13) }]}>{isTelugu ? 'కంప్యూటర్ సైన్స్ ఫ్యాకల్టీ' : 'Computer Science Faculty'}</Text>
             </View>
-            <View style={[styles.avatarContainer, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]}>
+            <View style={styles.avatarContainer}>
               <Image 
                 source={{ uri: 'https://i.pravatar.cc/150?img=11' }} 
                 style={styles.avatarImage} 
               />
             </View>
-          </View>
+          </LinearGradient>
 
-          {/* Motivation Banner - Solid Card */}
-          <View style={[styles.motivationBanner, { backgroundColor: '#EEF2FF', borderColor: '#E0E7FF' }]}>
-            <Text style={[styles.motivationTitle, { color: '#5B4BCA' }]}>{isTelugu ? 'ఈ రోజును ప్రభావవంతంగా చేద్దాం!' : "Let's make today impactful!"}</Text>
-            <Text style={[styles.motivationText, { color: '#7C3AED' }]}>{isTelugu ? 'ఈరోజు మీకు 4 తరగతులు ఉన్నాయి' : 'You have 4 classes today'}</Text>
-          </View>
+          {/* Motivation Banner - Glassmorphic */}
+          <BlurView intensity={20} tint="dark" style={[styles.motivationBanner, { borderColor: '#8B5CF6', shadowColor: '#8B5CF6', shadowOpacity: 0.6, shadowRadius: 8, elevation: 5 }]}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.motivationTitle, { color: '#F1F5F9' }]}>{isTelugu ? 'ఈ రోజును ప్రభావవంతంగా చేద్దాం!' : "Let's make today impactful!"}</Text>
+              <Text style={[styles.motivationText, { color: '#A78BFA' }]}>{isTelugu ? 'ఈరోజు మీకు 4 తరగతులు ఉన్నాయి' : 'You have 4 classes today'}</Text>
+            </View>
+          </BlurView>
 
-          {/* Quick Access */}
-          <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827', fontSize: scaleFont(16) }]}>{isTelugu ? 'శీఘ్ర ప్రాప్యత' : 'Quick Access'}</Text>
-          <View style={styles.quickAccessGrid}>
+          {/* Quick Access Title */}
+          <Text style={[styles.sectionTitle, { color: '#F1F5F9', fontSize: scaleFont(16) }]}>{isTelugu ? 'శీఘ్ర ప్రాప్యత' : 'Quick Access'}</Text>
+
+          {/* Quick Access Grid */}
+          <View style={styles.gridContainer}>
             {quickAccessItems.map((item) => (
-              <TouchableOpacity 
-                key={item.id} 
-                style={styles.quickAccessItem} 
-                activeOpacity={0.7}
-                onPress={() => item.route && navigation.navigate(item.route as any)}
-              >
-                <View style={[styles.quickAccessIconBg, { backgroundColor: '#F9FAFB', borderColor: '#F3F4F6' }]}>
-                  <MaterialCommunityIcons name={item.icon as any} size={28} color={item.color} />
-                </View>
-                <Text style={[styles.quickAccessText, { color: isDark ? '#D1D5DB' : '#6B7280' }]} numberOfLines={2}>
-                  {isTelugu ? item.titleTE : item.titleEN}
-                </Text>
-              </TouchableOpacity>
+              <BlurView intensity={30} tint="dark" style={[styles.gridItemCard, { borderColor: item.color, shadowColor: item.color, shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 }]} key={item.id}>
+                <TouchableOpacity 
+                  style={styles.gridItemTouch} 
+                  activeOpacity={0.7}
+                  onPress={() => item.route && navigation.navigate(item.route as any)}
+                >
+                  <View style={[styles.gridIconCircle, { backgroundColor: item.color + '30' }]}>
+                    <MaterialCommunityIcons name={item.icon as any} size={28} color={item.color} />
+                  </View>
+                  <Text style={[styles.gridItemText, { color: '#F1F5F9' }]} numberOfLines={2}>
+                    {isTelugu ? item.titleTE : item.titleEN}
+                  </Text>
+                </TouchableOpacity>
+              </BlurView>
             ))}
           </View>
 
           {/* Today's Classes */}
-          <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827', fontSize: scaleFont(16) }]}>{isTelugu ? 'నేటి తరగతులు' : "Today's Classes"}</Text>
+          <Text style={[styles.sectionTitle, { color: '#F1F5F9', fontSize: scaleFont(16), marginTop: 12 }]}>{isTelugu ? 'నేటి తరగతులు' : "Today's Classes"}</Text>
           <View style={styles.classesContainer}>
             {todaysClasses.map((cls) => (
-              <View style={[styles.classCard, { backgroundColor: '#F9FAFB', borderColor: '#F3F4F6' }]} key={cls.id}>
+              <BlurView intensity={20} tint="dark" style={[styles.classCard, { borderColor: '#10B981', shadowColor: '#10B981', shadowOpacity: 0.5, shadowRadius: 6, elevation: 4 }]} key={cls.id}>
                 <View style={styles.classInfo}>
-                  <Text style={[styles.classPeriod, { color: '#111827' }]}>{cls.period}</Text>
-                  <Text style={[styles.classTime, { color: '#6B7280' }]}>{cls.time}</Text>
-                  <Text style={[styles.className, { color: '#9CA3AF' }]}>{cls.className}</Text>
-                  <Text style={[styles.classSubject, { color: '#9CA3AF' }]}>{cls.subject}</Text>
+                  <Text style={[styles.classPeriod, { color: '#F8FAFC' }]}>{cls.period}</Text>
+                  <Text style={[styles.classTime, { color: '#9CA3AF' }]}>{cls.time}</Text>
+                  <Text style={[styles.className, { color: '#A78BFA' }]}>{cls.className}</Text>
+                  <Text style={[styles.classSubject, { color: '#6EE7B7' }]}>{cls.subject}</Text>
                 </View>
                 <TouchableOpacity style={styles.upcomingButton} activeOpacity={0.8}>
                   <Text style={styles.upcomingButtonText}>{isTelugu ? 'రాబోయే' : cls.status}</Text>
                 </TouchableOpacity>
-              </View>
+              </BlurView>
             ))}
           </View>
 
@@ -150,212 +149,78 @@ export default function FacultyHomeScreen({ navigation }: Props) {
         </ScrollView>
 
         {/* Bottom Tab Bar */}
-        <View style={[styles.bottomTabBar, { backgroundColor: '#FFFFFF', borderTopColor: '#E5E7EB' }]}>
+        <BlurView intensity={40} tint="dark" style={[styles.bottomTabBar, { borderTopColor: 'rgba(255,255,255,0.1)', backgroundColor: 'rgba(15, 23, 42, 0.85)', paddingBottom: Math.max(insets.bottom, 12) }]}>
           <TouchableOpacity style={styles.tabItem}>
-            <MaterialCommunityIcons name="home" size={28} color={isDark ? "#A78BFA" : "#5B4BCA"} />
-            <Text style={[styles.tabLabel, { color: isDark ? '#A78BFA' : '#5B4BCA' }]}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
+            <MaterialCommunityIcons name="home" size={28} color="#A855F7" />
+            <Text style={[styles.tabLabel, { color: '#A855F7' }]}>{isTelugu ? 'హోమ్' : 'Home'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyTimeTable')}>
-            <MaterialCommunityIcons name="calendar-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
+            <MaterialCommunityIcons name="calendar-outline" size={28} color="#94A3B8" />
+            <Text style={[styles.tabLabel, { color: '#94A3B8' }]}>{isTelugu ? 'టైమ్ టేబుల్' : 'Time Table'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyNotices')}>
-            <MaterialCommunityIcons name="bell-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
+            <MaterialCommunityIcons name="bell-outline" size={28} color="#94A3B8" />
+            <Text style={[styles.tabLabel, { color: '#94A3B8' }]}>{isTelugu ? 'నోటిఫికేషన్' : 'Notification'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyProfile' as any)}>
-            <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.tabLabel}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
+          <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('FacultyProfile')}>
+            <MaterialCommunityIcons name="account-outline" size={28} color="#94A3B8" />
+            <Text style={[styles.tabLabel, { color: '#94A3B8' }]}>{isTelugu ? 'ప్రొఫైల్' : 'Profile'}</Text>
           </TouchableOpacity>
-        </View>
-
-        {/* Settings Modal */}
-        {showSettings && (
-          <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
-             <View style={styles.modalBackdrop} />
-             
-             <View style={styles.centerModalOverlay}>
-               <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowSettings(false)} activeOpacity={1} />
-               <View style={styles.centerModalContentWrapper}>
-                <GlassCard intensity={isDark ? 50 : 100} style={styles.centerModalContent} styleOverride={{ backgroundColor: isDark ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255,255,255,0.95)', borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.8)' }}>
-                   <Text style={[styles.centerModalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>{isTelugu ? 'సెట్టింగ్‌లు' : 'Settings'}</Text>
-                   
-                   <TouchableOpacity style={[styles.settingsOption, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]} onPress={() => { setShowSettings(false); setShowEditProfile(true); }}>
-                      <MaterialCommunityIcons name="account-edit-outline" size={24} color={isDark ? "#A78BFA" : "#5B4BCA"} />
-                      <Text style={[styles.settingsOptionText, { color: isDark ? '#E5E7EB' : '#374151' }]}>{isTelugu ? 'ప్రొఫైల్‌ను సవరించండి' : 'Edit Profile'}</Text>
-                   </TouchableOpacity>
-                   <TouchableOpacity style={[styles.settingsOption, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]} onPress={() => { setShowSettings(false); setShowNotifications(true); }}>
-                      <MaterialCommunityIcons name="bell-ring-outline" size={24} color={isDark ? "#A78BFA" : "#5B4BCA"} />
-                      <Text style={[styles.settingsOptionText, { color: isDark ? '#E5E7EB' : '#374151' }]}>{isTelugu ? 'నోటిఫికేషన్లు' : 'Notifications'}</Text>
-                   </TouchableOpacity>
-                   <TouchableOpacity style={[styles.settingsOption, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }]} onPress={() => { setShowSettings(false); setShowPrivacy(true); }}>
-                      <MaterialCommunityIcons name="shield-lock-outline" size={24} color={isDark ? "#A78BFA" : "#5B4BCA"} />
-                      <Text style={[styles.settingsOptionText, { color: isDark ? '#E5E7EB' : '#374151' }]}>{isTelugu ? 'గోప్యత & భద్రత' : 'Privacy & Security'}</Text>
-                   </TouchableOpacity>
-                   <TouchableOpacity style={[styles.settingsOption, { borderBottomWidth: 0, marginBottom: 12 }]} onPress={() => { setShowSettings(false); navigation.replace('Login'); }}>
-                      <MaterialCommunityIcons name="logout" size={24} color="#EF4444" />
-                      <Text style={[styles.settingsOptionText, { color: '#EF4444' }]}>{isTelugu ? 'లాగ్ అవుట్' : 'Logout'}</Text>
-                   </TouchableOpacity>
-                   
-                   <TouchableOpacity style={styles.submitButton} onPress={() => setShowSettings(false)}>
-                      <Text style={styles.submitButtonText}>{isTelugu ? 'మూసివేయు' : 'Close'}</Text>
-                   </TouchableOpacity>
-                </GlassCard>
-               </View>
-             </View>
-          </View>
-        )}
-
-        {/* Drawer Modal */}
-        {showDrawer && (
-          <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
-             <View style={styles.modalBackdrop} />
-             
-             <View style={styles.drawerOverlay}>
-               <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowDrawer(false)} activeOpacity={1} />
-               
-               <View style={styles.drawerContainerWrapper}>
-               <View style={[styles.drawerContent, { backgroundColor: isDark ? '#1e293b' : 'transparent' }]}>
-                  {!isDark && <LinearGradient colors={['rgba(255,255,255,0.95)', 'rgba(255,255,255,0.85)']} style={StyleSheet.absoluteFill} />}
-                  
-                  <View style={[styles.drawerHeader, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]}>
-                     <Text style={styles.brandTitle}>ORYOL</Text>
-                     <TouchableOpacity onPress={() => setShowDrawer(false)}>
-                        <MaterialCommunityIcons name="close" size={24} color={isDark ? "#FFFFFF" : "#111827"} />
-                     </TouchableOpacity>
-                  </View>
-
-                  <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
-                     {quickAccessItems.map(item => (
-                       <TouchableOpacity 
-                         key={item.id} 
-                         style={[styles.drawerItem, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.8)' }]}
-                         onPress={() => {
-                           setShowDrawer(false);
-                           if (item.route) navigation.navigate(item.route as any);
-                         }}
-                       >
-                         <View style={[styles.drawerIconBg, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : item.color + '20' }]}>
-                            <MaterialCommunityIcons name={item.icon as any} size={22} color={isDark ? '#E5E7EB' : item.color} />
-                         </View>
-                         <Text style={[styles.drawerItemText, { color: isDark ? '#E5E7EB' : '#374151' }]}>{isTelugu ? item.titleTE : item.titleEN}</Text>
-                       </TouchableOpacity>
-                     ))}
-                  </ScrollView>
-               </View>
-             </View>
-             </View>
-          </View>
-        )}
-
-        {/* Edit Profile Modal */}
-        {showEditProfile && (
-           <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
-             <View style={styles.modalBackdrop} />
-             
-             <View style={styles.bottomModalOverlay}>
-               <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowEditProfile(false)} activeOpacity={1} />
-               <View style={styles.bottomModalContentWrapper}>
-                <GlassCard intensity={isDark ? 50 : 100} style={styles.bottomModalContent} styleOverride={{ backgroundColor: isDark ? '#1e293b' : '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderRadius: 0, borderBottomWidth: 0, borderLeftWidth: 0, borderRightWidth: 0, borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'transparent' }}>
-                   <View style={[styles.modalDragHandle, { backgroundColor: isDark ? '#4B5563' : '#E5E7EB' }]} />
-                   <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>{isTelugu ? 'ప్రొఫైల్‌ను సవరించండి' : 'Edit Profile'}</Text>
-                   
-                   <View style={styles.inputGroup}>
-                      <Text style={[styles.inputLabel, { color: isDark ? '#D1D5DB' : '#374151' }]}>{isTelugu ? 'పేరు' : 'Name'}</Text>
-                      <View style={[styles.textInput, { backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : '#F9FAFB', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#E5E7EB' }]}>
-                         <Text style={{color: isDark ? '#FFFFFF' : '#111827', fontSize: 15}}>Mr. Rahul Sharma</Text>
-                      </View>
-                   </View>
-                   
-                   <View style={styles.inputGroup}>
-                      <Text style={[styles.inputLabel, { color: isDark ? '#D1D5DB' : '#374151' }]}>{isTelugu ? 'ఫోన్ నంబర్' : 'Phone Number'}</Text>
-                      <View style={[styles.textInput, { backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : '#F9FAFB', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#E5E7EB' }]}>
-                         <Text style={{color: isDark ? '#FFFFFF' : '#111827', fontSize: 15}}>+91 98765 43210</Text>
-                      </View>
-                   </View>
-
-                   <TouchableOpacity style={styles.submitButton} onPress={() => setShowEditProfile(false)}>
-                      <Text style={styles.submitButtonText}>{isTelugu ? 'సేవ్ చేయండి' : 'Save Changes'}</Text>
-                   </TouchableOpacity>
-                </GlassCard>
-              </View>
-             </View>
-           </View>
-        )}
-
-        {/* Notifications Modal */}
-        {showNotifications && (
-           <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
-             <View style={styles.modalBackdrop} />
-             
-             <View style={styles.bottomModalOverlay}>
-               <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowNotifications(false)} activeOpacity={1} />
-               <View style={styles.bottomModalContentWrapper}>
-                <GlassCard intensity={isDark ? 50 : 100} style={styles.bottomModalContent} styleOverride={{ backgroundColor: isDark ? '#1e293b' : '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderRadius: 0, borderBottomWidth: 0, borderLeftWidth: 0, borderRightWidth: 0, borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'transparent' }}>
-                   <View style={[styles.modalDragHandle, { backgroundColor: isDark ? '#4B5563' : '#E5E7EB' }]} />
-                   <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>{isTelugu ? 'నోటిఫికేషన్లు' : 'Notifications'}</Text>
-                   
-                   <View style={[styles.switchRow, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : '#F3F4F6' }]}>
-                      <Text style={[styles.switchLabel, { color: isDark ? '#D1D5DB' : '#374151' }]}>{isTelugu ? 'పుష్ నోటిఫికేషన్లు' : 'Push Notifications'}</Text>
-                      <MaterialCommunityIcons name="toggle-switch" size={40} color="#10B981" />
-                   </View>
-                   
-                   <View style={[styles.switchRow, { borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : '#F3F4F6' }]}>
-                      <Text style={[styles.switchLabel, { color: isDark ? '#D1D5DB' : '#374151' }]}>{isTelugu ? 'ఇమెయిల్ నవీకరణలు' : 'Email Updates'}</Text>
-                      <MaterialCommunityIcons name="toggle-switch-off" size={40} color={isDark ? "#4B5563" : "#D1D5DB"} />
-                   </View>
-
-                   <TouchableOpacity style={[styles.submitButton, {marginTop: 20}]} onPress={() => setShowNotifications(false)}>
-                      <Text style={styles.submitButtonText}>{isTelugu ? 'పూర్తయింది' : 'Done'}</Text>
-                   </TouchableOpacity>
-                </GlassCard>
-              </View>
-             </View>
-           </View>
-        )}
-
-        {/* Privacy & Security Modal */}
-        {showPrivacy && (
-           <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
-             <View style={styles.modalBackdrop} />
-             
-             <View style={styles.bottomModalOverlay}>
-               <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowPrivacy(false)} activeOpacity={1} />
-               <View style={styles.bottomModalContentWrapper}>
-                <GlassCard intensity={isDark ? 50 : 100} style={styles.bottomModalContent} styleOverride={{ backgroundColor: isDark ? '#1e293b' : '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderRadius: 0, borderBottomWidth: 0, borderLeftWidth: 0, borderRightWidth: 0, borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'transparent' }}>
-                   <View style={[styles.modalDragHandle, { backgroundColor: isDark ? '#4B5563' : '#E5E7EB' }]} />
-                   <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>{isTelugu ? 'గోప్యత & భద్రత' : 'Privacy & Security'}</Text>
-                   
-                   <View style={styles.inputGroup}>
-                      <Text style={[styles.inputLabel, { color: isDark ? '#D1D5DB' : '#374151' }]}>{isTelugu ? 'పాత పాస్‌వర్డ్' : 'Old Password'}</Text>
-                      <View style={[styles.textInput, { backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : '#F9FAFB', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#E5E7EB' }]}>
-                         <Text style={{color: '#9CA3AF', fontSize: 15}}>••••••••</Text>
-                      </View>
-                   </View>
-                   
-                   <View style={styles.inputGroup}>
-                      <Text style={[styles.inputLabel, { color: isDark ? '#D1D5DB' : '#374151' }]}>{isTelugu ? 'కొత్త పాస్‌వర్డ్' : 'New Password'}</Text>
-                      <View style={[styles.textInput, { backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : '#F9FAFB', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#E5E7EB' }]}>
-                         <Text style={{color: '#9CA3AF', fontSize: 15}}>••••••••</Text>
-                      </View>
-                   </View>
-
-                   <TouchableOpacity style={styles.submitButton} onPress={() => setShowPrivacy(false)}>
-                      <Text style={styles.submitButtonText}>{isTelugu ? 'పాస్‌వర్డ్‌ను నవీకరించండి' : 'Update Password'}</Text>
-                   </TouchableOpacity>
-                </GlassCard>
-              </View>
-             </View>
-           </View>
-        )}
+        </BlurView>
 
       </SafeAreaView>
-    </View>
+
+        {/* Slide-out Menu Modal (In-layout) */}
+        {showDrawer && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
+            <View style={styles.menuOverlay}>
+              <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={() => setShowDrawer(false)}>
+                <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
+              </TouchableOpacity>
+              
+              <View style={styles.menuContainer}>
+                <LinearGradient colors={['#0F172A', '#1E1B4B']} style={styles.menuGradient}>
+                  <SafeAreaView style={{ flex: 1 }}>
+                    <View style={styles.menuHeader}>
+                      <Text style={styles.menuBrandTitle}>ORYOL</Text>
+                      <TouchableOpacity onPress={() => setShowDrawer(false)}>
+                        <MaterialCommunityIcons name="close" size={28} color="#F3F4F6" />
+                      </TouchableOpacity>
+                    </View>
+                    
+                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.menuScroll}>
+                      <Text style={styles.menuSectionTitle}>{isTelugu ? 'శీఘ్ర ప్రాప్యత' : 'Quick Access'}</Text>
+                      
+                      {quickAccessItems.map((item) => (
+                        <TouchableOpacity 
+                          key={item.id} 
+                          style={styles.menuItem} 
+                          onPress={() => {
+                            setShowDrawer(false);
+                            if (item.route) navigation.navigate(item.route as any);
+                          }}
+                        >
+                          <View style={[styles.menuIconContainer, { backgroundColor: item.color + '20' }]}>
+                            <MaterialCommunityIcons name={item.icon as any} size={22} color={item.color} />
+                          </View>
+                          <Text style={styles.menuItemText}>{isTelugu ? item.titleTE : item.titleEN}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </SafeAreaView>
+                </LinearGradient>
+              </View>
+            </View>
+          </View>
+        )}
+
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  background: { flex: 1 },
+  safeArea: { flex: 1 },
   
   appBar: {
     flexDirection: 'row',
@@ -363,298 +228,193 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 12,
+    backgroundColor: 'transparent',
   },
-  brandTitle: { fontSize: 20, fontWeight: '800', color: '#5B4BCA', letterSpacing: 1 },
+  brandTitle: { fontSize: 22, fontWeight: '900', color: '#E0E7FF', letterSpacing: 1 },
   appBarRight: { flexDirection: 'row', alignItems: 'center' },
   languageToggle: {
     flexDirection: 'row',
-    borderRadius: 16,
-    padding: 2,
-    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 20,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   languagePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
   },
-  languageActive: { },
+  languageActive: { backgroundColor: '#4F46E5' },
   languageInactive: { backgroundColor: 'transparent' },
-  languageText: { fontSize: 11, fontWeight: 'bold' },
-  languageTextActive: { },
+  languageText: { fontSize: 12, fontWeight: 'bold', color: '#94A3B8' },
+  languageTextActive: { color: '#FFFFFF' },
 
   scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
 
-  profileSection: {
+  profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    padding: 20,
+    borderRadius: 24,
+    marginBottom: 24,
+    shadowColor: '#4F46E5',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   profileInfo: { flex: 1 },
-  greetingText: { fontSize: 14, marginBottom: 2 },
-  facultyName: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },
-  facultyRole: { fontSize: 13 },
+  greetingText: { color: '#C7D2FE', marginBottom: 4 },
+  facultyName: { fontWeight: 'bold', color: '#FFFFFF', marginBottom: 4 },
+  facultyRole: { color: '#A5B4FC' },
   avatarContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
     overflow: 'hidden',
   },
   avatarImage: { width: '100%', height: '100%' },
 
   motivationBanner: {
-    borderRadius: 16,
-    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 20,
     marginBottom: 24,
     borderWidth: 1,
-    shadowColor: '#5B4BCA',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
   },
-  motivationTitle: { fontSize: 15, fontWeight: 'bold', marginBottom: 4 },
+  motivationTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
   motivationText: { fontSize: 13 },
 
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 16 },
+  sectionTitle: { fontWeight: '700', marginBottom: 16 },
 
-  quickAccessGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-  quickAccessItem: {
-    width: '23%',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  quickAccessIconBg: {
-    width: 60,
-    height: 60,
+  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  gridItemCard: {
+    width: '31%',
+    aspectRatio: 1,
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
+    backgroundColor: 'rgba(15, 23, 42, 0.7)',
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    overflow: 'hidden',
   },
-  quickAccessText: {
-    fontSize: 11,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
+  gridItemTouch: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 8 },
+  gridIconCircle: { width: 48, height: 48, borderRadius: 24, justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
+  gridItemText: { fontSize: 10, textAlign: 'center', fontWeight: '500' },
 
-  classesContainer: { marginBottom: 20 },
+  classesContainer: {
+    marginBottom: 16,
+  },
   classCard: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 16,
+    alignItems: 'center',
     padding: 16,
+    borderRadius: 16,
     marginBottom: 12,
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
+    backgroundColor: 'rgba(15, 23, 42, 0.7)',
   },
   classInfo: { flex: 1 },
-  classPeriod: { fontSize: 15, fontWeight: 'bold', marginBottom: 4 },
-  classTime: { fontSize: 13, marginBottom: 2 },
-  className: { fontSize: 13, marginBottom: 2 },
+  classPeriod: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
+  classTime: { fontSize: 13, marginBottom: 4 },
+  className: { fontSize: 14, fontWeight: '600', marginBottom: 2 },
   classSubject: { fontSize: 13 },
-  
   upcomingButton: {
-    backgroundColor: '#5B4BCA',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
   },
-  upcomingButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
+  upcomingButtonText: {
+    color: '#34D399',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
 
   bottomTabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
+    borderTopWidth: 1,
     position: 'absolute',
     bottom: 0,
     width: '100%',
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 10, marginTop: 4, fontWeight: '500', textAlign: 'center' },
 
-  centerModalOverlay: {
+  menuOverlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    width: '100%',
-    maxWidth: 480,
-    alignSelf: 'center',
-  },
-  modalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  centerModalContentWrapper: {
-    width: '100%',
-    maxWidth: 340,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  centerModalContent: {
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 1,
-  },
-  centerModalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  settingsOption: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-  },
-  settingsOptionText: {
-    fontSize: 16,
-    marginLeft: 12,
-    fontWeight: '500',
-  },
-  submitButton: {
-    backgroundColor: '#5B4BCA',
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-
-  drawerOverlay: {
-    flex: 1,
-    alignItems: 'flex-start',
     width: '100%',
     maxWidth: 480,
     alignSelf: 'center',
-  },
-  drawerContainerWrapper: {
-    width: '50%',
-    maxWidth: 320,
-    height: '100%',
     overflow: 'hidden',
   },
-  drawerContent: {
-    width: '100%',
-    maxWidth: 320,
+  menuContainer: {
+    width: '65%',
+    maxWidth: 280,
     height: '100%',
-    padding: 20,
-    paddingTop: 50,
     shadowColor: '#000',
-    shadowOffset: { width: 5, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
+    shadowOffset: { width: 4, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
     elevation: 10,
   },
-  drawerHeader: {
+  menuGradient: {
+    flex: 1,
+  },
+  menuHeader: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 30,
-    paddingBottom: 20,
+    padding: 20,
     borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
-  drawerItem: {
+  menuBrandTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#A855F7',
+    letterSpacing: 1,
+  },
+  menuScroll: {
+    padding: 20,
+  },
+  menuSectionTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#9CA3AF',
+    marginBottom: 16,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    marginBottom: 10,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    borderWidth: 1,
+    marginBottom: 16,
+    paddingVertical: 8,
   },
-  drawerIconBg: {
+  menuIconContainer: {
     width: 40,
     height: 40,
-    borderRadius: 10,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 16,
   },
-  drawerItemText: {
-    fontSize: 15,
-    fontWeight: '600',
-  },
-
-  bottomModalOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: 480,
-    alignSelf: 'center',
-  },
-  bottomModalContentWrapper: {
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 20,
-  },
-  bottomModalContent: {
-    padding: 24,
-    paddingBottom: 40,
-  },
-  modalDragHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  inputLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-  },
-  switchLabel: {
+  menuItemText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#E5E7EB',
   },
 });
