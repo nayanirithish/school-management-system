@@ -22,16 +22,40 @@ interface Props {
 export default function AdminComplaintManagementScreen({ navigation }: Props) {
   const { isTelugu, setIsTelugu } = useLanguage();
   const [activeFilter, setActiveFilter] = useState('All');
+  const [sortType, setSortType] = useState('date_desc');
 
   const filters = ['All', 'Open', 'In Progress', 'Resolved'];
 
-  const complaints = [
-    { id: 1, name: 'Rahul Kumar', class: 'Class 10 - A', status: 'Open', title: 'Classroom Noise Issue', category: 'Infrastructure', date: '22 May 2024', avatar: 'https://i.pravatar.cc/150?img=11' },
-    { id: 2, name: 'Ananya Rao', class: 'Class 9 - B', status: 'In Progress', title: 'Teacher Absence', category: 'Academic', date: '20 May 2024', avatar: 'https://i.pravatar.cc/150?img=9' },
-    { id: 3, name: 'Vikram Singh', class: 'Class 8 - A', status: 'Resolved', title: 'Canteen Food Quality', category: 'General', date: '18 May 2024', avatar: 'https://i.pravatar.cc/150?img=12' },
-    { id: 4, name: 'Pooja Verma', class: 'Class 11 - C', status: 'Open', title: 'Homework Overload', category: 'Academic', date: '17 May 2024', avatar: 'https://i.pravatar.cc/150?img=5' },
-    { id: 5, name: 'Arjun Mehta', class: 'Class 7 - B', status: 'In Progress', title: 'Bullying Complaint', category: 'Discipline', date: '15 May 2024', avatar: 'https://i.pravatar.cc/150?img=15' },
-  ];
+  const [complaints] = useState([
+    { id: 1, name: 'Rahul Kumar', class: 'Class 10 - A', status: 'Open', title: 'Classroom Noise Issue', category: 'Infrastructure', timestamp: new Date('2024-05-22T10:30:00Z').getTime(), date: '22 May 2024', time: '10:30 AM', avatar: 'https://i.pravatar.cc/150?img=11' },
+    { id: 2, name: 'Ananya Rao', class: 'Class 9 - B', status: 'In Progress', title: 'Teacher Absence', category: 'Academic', timestamp: new Date('2024-05-20T08:15:00Z').getTime(), date: '20 May 2024', time: '08:15 AM', avatar: 'https://i.pravatar.cc/150?img=9' },
+    { id: 3, name: 'Vikram Singh', class: 'Class 8 - A', status: 'Resolved', title: 'Canteen Food Quality', category: 'General', timestamp: new Date('2024-05-18T14:45:00Z').getTime(), date: '18 May 2024', time: '02:45 PM', avatar: 'https://i.pravatar.cc/150?img=12' },
+    { id: 4, name: 'Pooja Verma', class: 'Class 11 - C', status: 'Open', title: 'Homework Overload', category: 'Academic', timestamp: new Date('2024-05-17T09:00:00Z').getTime(), date: '17 May 2024', time: '09:00 AM', avatar: 'https://i.pravatar.cc/150?img=5' },
+    { id: 5, name: 'Arjun Mehta', class: 'Class 7 - B', status: 'In Progress', title: 'Bullying Complaint', category: 'Discipline', timestamp: new Date('2024-05-15T11:20:00Z').getTime(), date: '15 May 2024', time: '11:20 AM', avatar: 'https://i.pravatar.cc/150?img=15' },
+  ]);
+
+  const totalCount = complaints.length;
+  const openCount = complaints.filter(c => c.status === 'Open').length;
+  const resolvedCount = complaints.filter(c => c.status === 'Resolved').length;
+
+  let displayedComplaints = complaints.filter(c => activeFilter === 'All' ? true : c.status === activeFilter);
+  
+  displayedComplaints.sort((a, b) => {
+      if (sortType.startsWith('date')) {
+          return sortType.endsWith('desc') ? b.timestamp - a.timestamp : a.timestamp - b.timestamp;
+      } else {
+          const timeA = new Date(a.timestamp).getHours() * 60 + new Date(a.timestamp).getMinutes();
+          const timeB = new Date(b.timestamp).getHours() * 60 + new Date(b.timestamp).getMinutes();
+          return sortType.endsWith('desc') ? timeB - timeA : timeA - timeB;
+      }
+  });
+
+  const handleSortPress = () => {
+      if (sortType === 'date_desc') setSortType('time_desc');
+      else if (sortType === 'time_desc') setSortType('date_asc');
+      else if (sortType === 'date_asc') setSortType('time_asc');
+      else setSortType('date_desc');
+  };
 
   const getStatusStyle = (status: string) => {
     switch(status) {
@@ -90,8 +114,8 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
               placeholderTextColor="#9CA3AF"
             />
           </View>
-          <TouchableOpacity style={styles.filterButton}>
-            <MaterialCommunityIcons name="tune-vertical" size={24} color="#111827" />
+          <TouchableOpacity style={styles.filterButton} onPress={handleSortPress}>
+            <MaterialCommunityIcons name="tune-vertical" size={24} color={sortType.includes('time') ? '#4F46E5' : '#111827'} />
           </TouchableOpacity>
         </View>
 
@@ -99,15 +123,15 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
         <View style={styles.statsRow}>
            <View style={styles.statBox}>
               <Text style={styles.statLabel}>Total</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>24</Text>
+              <Text style={[styles.statValue, { color: '#111827' }]}>{totalCount}</Text>
            </View>
            <View style={styles.statBox}>
               <Text style={styles.statLabel}>Open</Text>
-              <Text style={[styles.statValue, { color: '#EF4444' }]}>9</Text>
+              <Text style={[styles.statValue, { color: '#EF4444' }]}>{openCount}</Text>
            </View>
            <View style={styles.statBox}>
               <Text style={styles.statLabel}>Resolved</Text>
-              <Text style={[styles.statValue, { color: '#10B981' }]}>15</Text>
+              <Text style={[styles.statValue, { color: '#10B981' }]}>{resolvedCount}</Text>
            </View>
         </View>
 
@@ -126,7 +150,7 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
 
         {/* Complaints List */}
         <View style={styles.listContainer}>
-          {complaints.map((item) => {
+          {displayedComplaints.map((item) => {
             const statusStyle = getStatusStyle(item.status);
             const categoryStyle = getCategoryStyle(item.category);
             return (
@@ -146,7 +170,10 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
                     <View style={[styles.categoryPill, { backgroundColor: categoryStyle.bg }]}>
                        <Text style={[styles.categoryText, { color: categoryStyle.text }]}>{item.category}</Text>
                     </View>
-                    <Text style={styles.complaintDate}>{item.date}</Text>
+                    <View style={{alignItems: 'flex-end'}}>
+                       <Text style={styles.complaintDate}>{item.date}</Text>
+                       <Text style={[styles.complaintDate, {fontSize: 10, marginTop: 2}]}>{item.time}</Text>
+                    </View>
                  </View>
               </View>
             );
@@ -156,13 +183,7 @@ export default function AdminComplaintManagementScreen({ navigation }: Props) {
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      {/* Floating Add Button */}
-      <View style={styles.fabContainer}>
-         <TouchableOpacity style={styles.fabButton}>
-            <MaterialCommunityIcons name="plus" size={20} color="#FFF" />
-            <Text style={styles.fabText}>Add New Complaint</Text>
-         </TouchableOpacity>
-      </View>
+      {/* Floating Add Button Removed */}
 
       {/* Bottom Tab Bar */}
       <View style={styles.bottomTabBar}>

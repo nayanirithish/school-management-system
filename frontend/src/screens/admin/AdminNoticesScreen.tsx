@@ -82,7 +82,26 @@ export default function AdminNoticesScreen({ navigation }: Props) {
 
         {/* Notices List */}
         <View style={styles.listContainer}>
-          {notices.map((notice) => {
+          {activeFilter === 'All' ? notices.map((notice) => {
+            const typeStyle = getTypeStyle(notice.type);
+            return (
+              <View key={notice.id} style={styles.noticeCard}>
+                 <View style={styles.cardHeader}>
+                    <View style={styles.noticeIconBg}>
+                       <MaterialCommunityIcons name={notice.icon as any} size={24} color="#111827" />
+                    </View>
+                    <View style={styles.titleContainer}>
+                       <Text style={styles.noticeTitle}>{notice.title}</Text>
+                    </View>
+                    <View style={[styles.typePill, { backgroundColor: typeStyle.bg }]}>
+                       <Text style={[styles.typeText, { color: typeStyle.text }]}>{notice.type}</Text>
+                    </View>
+                 </View>
+                 <Text style={styles.noticeDesc}>{notice.desc}</Text>
+                 <Text style={styles.noticeDate}>{notice.date}</Text>
+              </View>
+            );
+          }) : notices.filter(n => n.type === activeFilter).map((notice) => {
             const typeStyle = getTypeStyle(notice.type);
             return (
               <View key={notice.id} style={styles.noticeCard}>
@@ -102,6 +121,13 @@ export default function AdminNoticesScreen({ navigation }: Props) {
               </View>
             );
           })}
+          
+          {(activeFilter !== 'All' && notices.filter(n => n.type === activeFilter).length === 0) && (
+            <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+              <MaterialCommunityIcons name="bell-off-outline" size={48} color="#D1D5DB" />
+              <Text style={{ fontSize: 15, color: '#9CA3AF', marginTop: 8 }}>No notices found</Text>
+            </View>
+          )}
         </View>
 
         <View style={{ height: 100 }} />

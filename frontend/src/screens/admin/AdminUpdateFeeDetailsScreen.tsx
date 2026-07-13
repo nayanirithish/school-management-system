@@ -7,12 +7,15 @@ import {
   ScrollView, 
   TouchableOpacity, 
   TextInput,
-  Image
+  Image,
+  Modal,
+  FlatList
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAdmin } from '../../context/AdminContext';
 
 type AdminUpdateFeeDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AdminUpdateFeeDetails'>;
 interface Props {
@@ -21,6 +24,14 @@ interface Props {
 
 export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
   const { isTelugu, setIsTelugu } = useLanguage();
+  const { studentList, addTransaction } = useAdmin();
+
+  // Selection states
+  const [selectedClass, setSelectedClass] = useState<string>('Select Class');
+  const [showClassModal, setShowClassModal] = useState(false);
+  
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
+  const [showStudentModal, setShowStudentModal] = useState(false);
 
   // Form states
   const [paymentType, setPaymentType] = useState('Select Type');
@@ -28,6 +39,34 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
   const [paymentDate, setPaymentDate] = useState('22 May 2024');
   const [transactionId, setTransactionId] = useState('');
   const [remarks, setRemarks] = useState('');
+
+  // Dropdown states
+  const paymentTypes = ['Cash', 'Credit/Debit Card', 'Bank Transfer', 'UPI', 'Cheque'];
+  const [showTypeModal, setShowTypeModal] = useState(false);
+
+  // Date Picker Custom UI
+  const [date, setDate] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  
+  const getDaysInMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  const getFirstDayOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1).getDay();
+
+  // Derived data
+  const classes = Array.from(new Set(studentList.map(s => s.className)));
+  const filteredStudents = studentList.filter(s => s.className === selectedClass);
+  const selectedStudent = studentList.find(s => s.id === selectedStudentId);
+
+  const handleSavePayment = () => {
+    if (selectedStudent && amount) {
+      addTransaction({
+        name: selectedStudent.name,
+        className: selectedStudent.className,
+        amount: parseInt(amount, 10)
+      });
+      navigation.goBack();
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -57,20 +96,52 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
         
         <Text style={styles.pageTitle}>Update Fee Details</Text>
 
-        {/* Student Profile Card */}
-        <View style={styles.studentCard}>
-           <Image source={{ uri: 'https://i.pravatar.cc/150?img=11' }} style={styles.avatar} />
-           <View style={styles.studentInfo}>
-              <Text style={styles.studentName}>Rahul Kumar</Text>
-              <Text style={styles.studentDetails}>Class 10 - A | Roll No. 25</Text>
-           </View>
+        {/* Selection Flow */}
+        <View style={styles.formGroup}>
+           <Text style={styles.label}>Select Class</Text>
+           <TouchableOpacity 
+             style={styles.dropdown} 
+             onPress={() => setShowClassModal(true)}
+           >
+             <Text style={[styles.inputText, selectedClass === 'Select Class' && { color: '#9CA3AF' }]}>{selectedClass}</Text>
+             <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
+           </TouchableOpacity>
         </View>
+
+        {selectedClass !== 'Select Class' && (
+          <View style={styles.formGroup}>
+             <Text style={styles.label}>Select Student</Text>
+             <TouchableOpacity 
+               style={styles.dropdown} 
+               onPress={() => setShowStudentModal(true)}
+             >
+               <Text style={[styles.inputText, !selectedStudentId && { color: '#9CA3AF' }]}>
+                 {selectedStudent ? selectedStudent.name : 'Select Student'}
+               </Text>
+               <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
+             </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Show Rest of UI ONLY if Student is Selected */}
+        {selectedStudent && (
+          <>
+            {/* Student Profile Card */}
+            <View style={styles.studentCard}>
+               <Image source={{ uri: selectedStudent.avatar }} style={styles.avatar} />
+               <View style={styles.studentInfo}>
+                  <Text style={styles.studentName}>{selectedStudent.name}</Text>
+                  <Text style={styles.studentDetails}>{selectedStudent.className} | Roll No. {selectedStudent.roll}</Text>
+               </View>
+            </View>
 
         {/* Fee Summary */}
         <View style={styles.feeSummaryCard}>
            <View style={styles.feeBox}>
               <Text style={styles.feeLabel}>Total Annual Fees</Text>
-              <Text style={[styles.feeValue, { color: '#111827' }]}>₹ 25,000</Text>
+              <Text style={[styles.feeValue, { color: '#111827' }]}>
+                ₹ {parseInt(selectedStudent.tuitionFee || '15000') + parseInt(selectedStudent.transportFee || '5000') + parseInt(selectedStudent.libraryFee || '2000')}
+              </Text>
            </View>
            <View style={styles.feeBox}>
               <Text style={styles.feeLabel}>Paid Amount</Text>
@@ -86,12 +157,29 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
         <View style={styles.formCard}>
            <Text style={styles.formTitle}>Add Payment</Text>
            
-           <View style={styles.formGroup}>
+           <View style={[styles.formGroup, { zIndex: 10 }]}>
               <Text style={styles.label}>Payment Type</Text>
-              <TouchableOpacity style={styles.dropdown}>
+              <TouchableOpacity 
+                style={[styles.dropdown, showTypeModal && styles.dropdownOpen]} 
+                onPress={() => setShowTypeModal(!showTypeModal)}
+              >
                 <Text style={styles.inputText}>{paymentType}</Text>
-                <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
+                <MaterialCommunityIcons name={showTypeModal ? "chevron-up" : "chevron-down"} size={20} color="#111827" />
               </TouchableOpacity>
+              {showTypeModal && (
+                <View style={styles.inlineDropdownList}>
+                  {paymentTypes.map((item, index) => (
+                    <TouchableOpacity 
+                      key={item}
+                      style={[styles.inlineDropdownOption, index === paymentTypes.length - 1 && { borderBottomWidth: 0 }]}
+                      onPress={() => { setPaymentType(item); setShowTypeModal(false); }}
+                    >
+                      <Text style={[styles.dropdownOptionText, paymentType === item && { color: '#4F46E5', fontWeight: 'bold' }]}>{item}</Text>
+                      {paymentType === item && <MaterialCommunityIcons name="check" size={20} color="#4F46E5" />}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
            </View>
 
            <View style={styles.formGroup}>
@@ -108,15 +196,57 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
 
            <View style={styles.formGroup}>
               <Text style={styles.label}>Payment Date</Text>
-              <View style={styles.inputWithIcon}>
-                <TextInput 
-                  style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0 }]} 
-                  value={paymentDate} 
-                  onChangeText={setPaymentDate} 
-                />
+              <TouchableOpacity style={styles.inputWithIcon} onPress={() => setShowDatePicker(true)}>
+                <Text style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0, paddingTop: 14 }]}>
+                  {paymentDate}
+                </Text>
                 <MaterialCommunityIcons name="calendar-blank-outline" size={20} color="#111827" style={styles.inputIcon} />
-              </View>
+              </TouchableOpacity>
            </View>
+
+           {showDatePicker && (
+             <View style={styles.calendarContainer}>
+               <View style={styles.calendarHeader}>
+                 <TouchableOpacity onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
+                   <MaterialCommunityIcons name="chevron-left" size={24} color="#111827" />
+                 </TouchableOpacity>
+                 <Text style={styles.calendarMonthText}>
+                   {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                 </Text>
+                 <TouchableOpacity onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}>
+                   <MaterialCommunityIcons name="chevron-right" size={24} color="#111827" />
+                 </TouchableOpacity>
+               </View>
+               <View style={styles.calendarGrid}>
+                 {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(wd => (
+                   <View key={wd} style={styles.calendarDay}>
+                     <Text style={styles.calendarWeekDayText}>{wd}</Text>
+                   </View>
+                 ))}
+                 {Array.from({ length: getFirstDayOfMonth(currentMonth) }).map((_, i) => (
+                   <View key={`empty-${i}`} style={styles.calendarDay} />
+                 ))}
+                 {Array.from({ length: getDaysInMonth(currentMonth) }).map((_, i) => {
+                   const dayNum = i + 1;
+                   const isSelected = date.getDate() === dayNum && date.getMonth() === currentMonth.getMonth() && date.getFullYear() === currentMonth.getFullYear();
+                   return (
+                     <TouchableOpacity 
+                       key={dayNum} 
+                       style={[styles.calendarDay, isSelected && styles.calendarDaySelected]}
+                       onPress={() => {
+                         const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), dayNum);
+                         setDate(newDate);
+                         setPaymentDate(newDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }));
+                         setShowDatePicker(false);
+                       }}
+                     >
+                       <Text style={[styles.calendarDayText, isSelected && styles.calendarDayTextSelected]}>{dayNum}</Text>
+                     </TouchableOpacity>
+                   );
+                 })}
+               </View>
+             </View>
+           )}
 
            <View style={styles.formGroup}>
               <Text style={styles.label}>Transaction ID (Optional)</Text>
@@ -140,20 +270,24 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
               />
            </View>
 
-        </View>
+         </View>
+          </>
+        )}
 
         <View style={{ height: 100 }} />
       </ScrollView>
 
       {/* Floating Save Button */}
-      <View style={styles.fabContainer}>
-         <TouchableOpacity 
-           style={styles.fabButton}
-           onPress={() => navigation.goBack()}
-         >
-            <Text style={styles.fabText}>Save Payment</Text>
-         </TouchableOpacity>
-      </View>
+      {selectedStudent && (
+        <View style={styles.fabContainer}>
+           <TouchableOpacity 
+             style={styles.fabButton}
+             onPress={handleSavePayment}
+           >
+              <Text style={styles.fabText}>Save Payment</Text>
+           </TouchableOpacity>
+        </View>
+      )}
 
       {/* Bottom Tab Bar */}
       <View style={styles.bottomTabBar}>
@@ -174,6 +308,47 @@ export default function AdminUpdateFeeDetailsScreen({ navigation }: Props) {
           <Text style={styles.tabLabel}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Class Modal */}
+      <Modal visible={showClassModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+           <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowClassModal(false)} activeOpacity={1} />
+           <View style={styles.centerModalContent}>
+              <Text style={styles.modalTitle}>Select Class</Text>
+              <FlatList
+                data={classes}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.modalOption} onPress={() => { setSelectedClass(item); setSelectedStudentId(null); setShowClassModal(false); }}>
+                     <Text style={styles.modalOptionText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+           </View>
+        </View>
+      </Modal>
+
+      {/* Student Modal */}
+      <Modal visible={showStudentModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+           <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowStudentModal(false)} activeOpacity={1} />
+           <View style={styles.centerModalContent}>
+              <Text style={styles.modalTitle}>Select Student</Text>
+              <FlatList
+                data={filteredStudents}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.modalOption} onPress={() => { setSelectedStudentId(item.id); setShowStudentModal(false); }}>
+                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                       <Image source={{ uri: item.avatar }} style={{ width: 32, height: 32, borderRadius: 16, marginRight: 12 }} />
+                       <Text style={styles.modalOptionText}>{item.name}</Text>
+                     </View>
+                  </TouchableOpacity>
+                )}
+              />
+           </View>
+        </View>
+      </Modal>
 
     </SafeAreaView>
   );
@@ -300,6 +475,83 @@ const styles = StyleSheet.create({
   },
   inputIcon: { marginLeft: 8 },
 
+  dropdownOpen: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    borderBottomWidth: 0,
+  },
+  inlineDropdownList: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    overflow: 'hidden',
+  },
+  inlineDropdownOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  dropdownOptionText: {
+    fontSize: 16,
+    color: '#374151',
+  },
+
+  // Custom Calendar Styles
+  calendarContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginBottom: 16,
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  calendarMonthText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  calendarDay: {
+    width: '14.28%', // 100% / 7
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  calendarDaySelected: {
+    backgroundColor: '#4F46E5',
+    borderRadius: 20,
+  },
+  calendarWeekDayText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#6B7280',
+  },
+  calendarDayText: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  calendarDayTextSelected: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+
   fabContainer: { position: 'absolute', bottom: 80, left: 16, right: 16 },
   fabButton: { 
     backgroundColor: '#4F46E5', 
@@ -329,4 +581,33 @@ const styles = StyleSheet.create({
   },
   tabItem: { alignItems: 'center' },
   tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+
+  // Modals
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  centerModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 24,
+    width: '100%',
+    maxWidth: 340,
+    maxHeight: '80%',
+  },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
+  modalOption: {
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  modalOptionText: {
+    fontSize: 15,
+    color: '#1F2937',
+    fontWeight: '500',
+  },
 });
+

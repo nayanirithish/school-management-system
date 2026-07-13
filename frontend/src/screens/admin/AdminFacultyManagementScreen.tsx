@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAdmin, Faculty } from '../../context/AdminContext';
 
 type AdminFacultyNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AdminFacultyManagement'>;
 interface Props {
@@ -22,16 +23,12 @@ interface Props {
 
 export default function AdminFacultyManagementScreen({ navigation }: Props) {
   const { isTelugu, setIsTelugu } = useLanguage();
-  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const { facultyList, deleteFaculty, toggleFacultyStatus } = useAdmin();
+  const [activeModal, setActiveModal] = useState<Faculty | null>(null);
 
-  const facultyList = [
-    { id: 1, name: 'Mr. Rahul Sharma', dept: 'Computer Science', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=11' },
-    { id: 2, name: 'Ms. Neha Joshi', dept: 'Mathematics', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=5' },
-    { id: 3, name: 'Mr. Arvind Kumar', dept: 'Physics', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=68' },
-    { id: 4, name: 'Ms. Priya Nair', dept: 'English', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=47' },
-    { id: 5, name: 'Mr. Suresh Babu', dept: 'Chemistry', status: 'Inactive', avatar: 'https://i.pravatar.cc/150?img=12' },
-    { id: 6, name: 'Ms. Kavya Reddy', dept: 'Biology', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=20' },
-  ];
+  const totalFaculty = facultyList.length;
+  const activeFaculty = facultyList.filter(f => f.status === 'Active').length;
+  const inactiveFaculty = facultyList.filter(f => f.status === 'Inactive').length;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -80,15 +77,15 @@ export default function AdminFacultyManagementScreen({ navigation }: Props) {
         <View style={styles.statsRow}>
            <View style={[styles.statCard, { flex: 1.1 }]}>
               <Text style={styles.statLabel}>Total Faculty</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>86</Text>
+              <Text style={[styles.statValue, { color: '#111827' }]}>{totalFaculty}</Text>
            </View>
            <View style={[styles.statCard, { flex: 1 }]}>
               <Text style={styles.statLabel}>Active Faculty</Text>
-              <Text style={[styles.statValue, { color: '#4F46E5' }]}>78</Text>
+              <Text style={[styles.statValue, { color: '#4F46E5' }]}>{activeFaculty}</Text>
            </View>
            <View style={[styles.statCard, { flex: 1 }]}>
               <Text style={styles.statLabel}>Inactive Faculty</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>8</Text>
+              <Text style={[styles.statValue, { color: '#111827' }]}>{inactiveFaculty}</Text>
            </View>
         </View>
 
@@ -106,7 +103,7 @@ export default function AdminFacultyManagementScreen({ navigation }: Props) {
                     {faculty.status}
                   </Text>
                </View>
-               <TouchableOpacity style={styles.moreButton} onPress={() => setActiveModal(faculty.name)}>
+               <TouchableOpacity style={styles.moreButton} onPress={() => setActiveModal(faculty)}>
                   <MaterialCommunityIcons name="dots-vertical" size={24} color="#4B5563" />
                </TouchableOpacity>
             </View>
@@ -152,17 +149,27 @@ export default function AdminFacultyManagementScreen({ navigation }: Props) {
         <View style={styles.modalOverlay}>
            <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setActiveModal(null)} activeOpacity={1} />
            <View style={styles.centerModalContent}>
-              <Text style={styles.modalTitle}>Manage {activeModal}</Text>
+              <Text style={styles.modalTitle}>Manage {activeModal?.name}</Text>
               
-              <TouchableOpacity style={styles.settingsOption} onPress={() => { setActiveModal(null); navigation.navigate('AdminAddUpdateFaculty'); }}>
+              <TouchableOpacity style={styles.settingsOption} onPress={() => { 
+                const facultyId = activeModal?.id;
+                setActiveModal(null); 
+                navigation.navigate('AdminAddUpdateFaculty', { facultyId }); 
+              }}>
                  <MaterialCommunityIcons name="pencil-outline" size={24} color="#4F46E5" />
                  <Text style={styles.settingsOptionText}>Edit Faculty</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.settingsOption} onPress={() => setActiveModal(null)}>
+              <TouchableOpacity style={styles.settingsOption} onPress={() => {
+                 if (activeModal) toggleFacultyStatus(activeModal.id);
+                 setActiveModal(null);
+              }}>
                  <MaterialCommunityIcons name="cancel" size={24} color="#F59E0B" />
-                 <Text style={styles.settingsOptionText}>Deactivate Faculty</Text>
+                 <Text style={styles.settingsOptionText}>{activeModal?.status === 'Active' ? 'Deactivate' : 'Activate'} Faculty</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.settingsOption, { borderBottomWidth: 0, marginBottom: 12 }]} onPress={() => setActiveModal(null)}>
+              <TouchableOpacity style={[styles.settingsOption, { borderBottomWidth: 0, marginBottom: 12 }]} onPress={() => {
+                 if (activeModal) deleteFaculty(activeModal.id);
+                 setActiveModal(null);
+              }}>
                  <MaterialCommunityIcons name="delete-outline" size={24} color="#EF4444" />
                  <Text style={[styles.settingsOptionText, { color: '#EF4444' }]}>Delete Faculty</Text>
               </TouchableOpacity>

@@ -6,8 +6,7 @@ import {
   SafeAreaView, 
   ScrollView, 
   TouchableOpacity, 
-  Image, 
-  Modal 
+  Image
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -21,13 +20,14 @@ interface Props {
 
 export default function AdminHomeScreen({ navigation }: Props) {
   const { isTelugu, setIsTelugu } = useLanguage();
-  const [showSettings, setShowSettings] = useState(false);
 
   const quickAccessItems = [
     { id: 1, title: 'Student Management', icon: 'account-group-outline', route: 'AdminStudentManagement' },
     { id: 2, title: 'Faculty Management', icon: 'account-tie-outline', route: 'AdminFacultyManagement' },
+    { id: 9, title: 'Class Teachers', icon: 'human-male-board', route: 'AdminClassTeachers' },
     { id: 3, title: 'Fee\nManagement', icon: 'wallet-outline', route: 'AdminFeeManagement' },
     { id: 4, title: 'Notices', icon: 'bell-outline', route: 'AdminNotices' },
+    { id: 10, title: 'Upload Results', icon: 'chart-line', route: 'AdminUploadResults' },
     { id: 5, title: 'Overall Results', icon: 'chart-bar', route: 'AdminResults' },
     { id: 6, title: 'Classes', icon: 'calendar-blank-outline', route: 'AdminClasses' },
     { id: 7, title: 'Complaints', icon: 'message-alert-outline', route: 'AdminComplaintManagement' },
@@ -52,7 +52,7 @@ export default function AdminHomeScreen({ navigation }: Props) {
               <Text style={isTelugu ? styles.langTextActive : styles.langTextInactive}>Telugu</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => setShowSettings(true)}>
+          <TouchableOpacity style={{ marginLeft: 12 }} onPress={() => navigation.navigate('AdminSettings')}>
             <MaterialCommunityIcons name="cog-outline" size={24} color="#4B5563" />
           </TouchableOpacity>
         </View>
@@ -114,13 +114,7 @@ export default function AdminHomeScreen({ navigation }: Props) {
               <TouchableOpacity 
                 style={styles.quickAccessItem} 
                 activeOpacity={0.7}
-                onPress={() => {
-                  if (item.route === 'Settings') {
-                    setShowSettings(true);
-                  } else {
-                    navigation.navigate(item.route as any);
-                  }
-                }}
+                onPress={() => navigation.navigate(item.route as any)}
               >
                 <View style={styles.quickAccessIconBg}>
                   <MaterialCommunityIcons name={item.icon as any} size={28} color="#111827" />
@@ -156,36 +150,7 @@ export default function AdminHomeScreen({ navigation }: Props) {
         </TouchableOpacity>
       </View>
 
-      {/* Settings Center Modal */}
-      <Modal visible={showSettings} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-           <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowSettings(false)} activeOpacity={1} />
-           <View style={styles.centerModalContent}>
-              <Text style={styles.centerModalTitle}>Settings</Text>
-              
-              <TouchableOpacity style={styles.settingsOption} onPress={() => { setShowSettings(false); navigation.navigate('AdminProfile'); }}>
-                 <MaterialCommunityIcons name="account-edit-outline" size={24} color="#4F46E5" />
-                 <Text style={styles.settingsOptionText}>Edit Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.settingsOption} onPress={() => { setShowSettings(false); navigation.navigate('AdminProfile'); }}>
-                 <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#4F46E5" />
-                 <Text style={styles.settingsOptionText}>Notifications</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.settingsOption} onPress={() => { setShowSettings(false); navigation.navigate('AdminProfile'); }}>
-                 <MaterialCommunityIcons name="shield-lock-outline" size={24} color="#4F46E5" />
-                 <Text style={styles.settingsOptionText}>Privacy & Security</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.settingsOption, { borderBottomWidth: 0, marginBottom: 12 }]} onPress={() => { setShowSettings(false); navigation.replace('Login'); }}>
-                 <MaterialCommunityIcons name="logout" size={24} color="#EF4444" />
-                 <Text style={[styles.settingsOptionText, { color: '#EF4444' }]}>Logout</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.submitButtonWrapper} onPress={() => setShowSettings(false)}>
-                <Text style={styles.submitButtonText}>Close</Text>
-              </TouchableOpacity>
-           </View>
-        </View>
-      </Modal>
+      {/* Settings Modal Removed */}
 
     </SafeAreaView>
   );
@@ -308,10 +273,10 @@ const styles = StyleSheet.create({
   quickAccessGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   quickAccessItemWrapper: {
-    width: '24%',
+    width: '25%',
     marginBottom: 20,
   },
   quickAccessItem: {
@@ -347,50 +312,4 @@ const styles = StyleSheet.create({
   },
   tabItem: { alignItems: 'center' },
   tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  centerModalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
-    width: '100%',
-    maxWidth: 340,
-  },
-  centerModalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  settingsOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-  },
-  settingsOptionText: {
-    fontSize: 16,
-    color: '#1F2937',
-    marginLeft: 12,
-    fontWeight: '500',
-  },
-  submitButtonWrapper: {
-    backgroundColor: '#4F46E5',
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
 });

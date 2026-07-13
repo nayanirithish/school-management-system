@@ -7,9 +7,14 @@ import {
   ScrollView, 
   TouchableOpacity, 
   TextInput,
+  Modal,
+  FlatList,
+  Platform,
+  Alert
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as DocumentPicker from 'expo-document-picker';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -26,7 +31,56 @@ export default function AdminAddNoticeScreen({ navigation }: Props) {
   const [type, setType] = useState('Select Type');
   const [audience, setAudience] = useState('Select Audience');
   const [description, setDescription] = useState('');
-  const [publishDate, setPublishDate] = useState('22 May 2024');
+  
+  // Date Picker Custom UI
+  const [date, setDate] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [publishDate, setPublishDate] = useState(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }));
+
+  const getDaysInMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  const getFirstDayOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1).getDay();
+
+  // Document Picker
+  const [attachmentName, setAttachmentName] = useState('Choose File');
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({});
+      if (result.assets && result.assets.length > 0) {
+        setAttachmentName(result.assets[0].name);
+      }
+    } catch (error) {
+      console.log('Error picking document:', error);
+    }
+  };
+
+  // Dropdowns
+  const [showTypeModal, setShowTypeModal] = useState(false);
+  const noticeTypes = ['General', 'Academic', 'Event', 'Holiday', 'Exam'];
+
+  const [showAudienceModal, setShowAudienceModal] = useState(false);
+  const audiences = ['All Students', 'All Faculty', 'Class X', 'Class XII', 'Parents', 'Everyone'];
+
+  // Success Modal
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const selectedType = type !== 'Select Type' ? type : 'General';
+
+  const handlePublish = () => {
+    if (!title.trim() || type === 'Select Type' || audience === 'Select Audience' || !description.trim()) {
+      if (Platform.OS === 'web') {
+        window.alert("Please fill all required fields before publishing.");
+      } else {
+        Alert.alert("Required Fields", "Please fill all required fields before publishing.");
+      }
+      return;
+    }
+    setShowSuccessModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowSuccessModal(false);
+    navigation.navigate('AdminNotices');
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -68,20 +122,54 @@ export default function AdminAddNoticeScreen({ navigation }: Props) {
            />
         </View>
 
-        <View style={styles.formGroup}>
+        <View style={[styles.formGroup, { zIndex: 10 }]}>
            <Text style={styles.label}>Notice Type</Text>
-           <TouchableOpacity style={styles.dropdown}>
+           <TouchableOpacity 
+             style={[styles.dropdown, showTypeModal && styles.dropdownOpen]} 
+             onPress={() => setShowTypeModal(!showTypeModal)}
+           >
              <Text style={styles.inputText}>{type}</Text>
-             <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
+             <MaterialCommunityIcons name={showTypeModal ? "chevron-up" : "chevron-down"} size={20} color="#111827" />
            </TouchableOpacity>
+           {showTypeModal && (
+             <View style={styles.inlineDropdownList}>
+               {noticeTypes.map((item, index) => (
+                 <TouchableOpacity 
+                   key={item}
+                   style={[styles.inlineDropdownOption, index === noticeTypes.length - 1 && { borderBottomWidth: 0 }]}
+                   onPress={() => { setType(item); setShowTypeModal(false); }}
+                 >
+                   <Text style={[styles.dropdownOptionText, type === item && { color: '#4F46E5', fontWeight: 'bold' }]}>{item}</Text>
+                   {type === item && <MaterialCommunityIcons name="check" size={20} color="#4F46E5" />}
+                 </TouchableOpacity>
+               ))}
+             </View>
+           )}
         </View>
 
-        <View style={styles.formGroup}>
+        <View style={[styles.formGroup, { zIndex: 9 }]}>
            <Text style={styles.label}>Audience</Text>
-           <TouchableOpacity style={styles.dropdown}>
+           <TouchableOpacity 
+             style={[styles.dropdown, showAudienceModal && styles.dropdownOpen]} 
+             onPress={() => setShowAudienceModal(!showAudienceModal)}
+           >
              <Text style={styles.inputText}>{audience}</Text>
-             <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
+             <MaterialCommunityIcons name={showAudienceModal ? "chevron-up" : "chevron-down"} size={20} color="#111827" />
            </TouchableOpacity>
+           {showAudienceModal && (
+             <View style={styles.inlineDropdownList}>
+               {audiences.map((item, index) => (
+                 <TouchableOpacity 
+                   key={item}
+                   style={[styles.inlineDropdownOption, index === audiences.length - 1 && { borderBottomWidth: 0 }]}
+                   onPress={() => { setAudience(item); setShowAudienceModal(false); }}
+                 >
+                   <Text style={[styles.dropdownOptionText, audience === item && { color: '#4F46E5', fontWeight: 'bold' }]}>{item}</Text>
+                   {audience === item && <MaterialCommunityIcons name="check" size={20} color="#4F46E5" />}
+                 </TouchableOpacity>
+               ))}
+             </View>
+           )}
         </View>
 
         <View style={styles.formGroup}>
@@ -99,23 +187,65 @@ export default function AdminAddNoticeScreen({ navigation }: Props) {
 
         <View style={styles.formGroup}>
            <Text style={styles.label}>Attachment (Optional)</Text>
-           <TouchableOpacity style={styles.fileInput}>
+           <TouchableOpacity style={styles.fileInput} onPress={pickDocument}>
              <MaterialCommunityIcons name="paperclip" size={20} color="#111827" style={styles.fileIcon} />
-             <Text style={styles.fileInputText}>Choose File</Text>
+             <Text style={styles.fileInputText} numberOfLines={1}>{attachmentName}</Text>
            </TouchableOpacity>
         </View>
 
         <View style={styles.formGroup}>
            <Text style={styles.label}>Publish Date</Text>
-           <View style={styles.inputWithIcon}>
-             <TextInput 
-               style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0 }]} 
-               value={publishDate} 
-               onChangeText={setPublishDate} 
-             />
+           <TouchableOpacity style={styles.inputWithIcon} onPress={() => setShowDatePicker(true)}>
+             <Text style={[styles.input, { flex: 1, borderWidth: 0, marginBottom: 0, paddingTop: 14 }]}>
+               {publishDate}
+             </Text>
              <MaterialCommunityIcons name="calendar-blank-outline" size={20} color="#111827" style={styles.inputIcon} />
-           </View>
+           </TouchableOpacity>
         </View>
+        
+        {showDatePicker && (
+          <View style={styles.calendarContainer}>
+            <View style={styles.calendarHeader}>
+              <TouchableOpacity onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
+                <MaterialCommunityIcons name="chevron-left" size={24} color="#111827" />
+              </TouchableOpacity>
+              <Text style={styles.calendarMonthText}>
+                {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+              </Text>
+              <TouchableOpacity onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}>
+                <MaterialCommunityIcons name="chevron-right" size={24} color="#111827" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.calendarGrid}>
+              {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(wd => (
+                <View key={wd} style={styles.calendarDay}>
+                  <Text style={styles.calendarWeekDayText}>{wd}</Text>
+                </View>
+              ))}
+              {Array.from({ length: getFirstDayOfMonth(currentMonth) }).map((_, i) => (
+                <View key={`empty-${i}`} style={styles.calendarDay} />
+              ))}
+              {Array.from({ length: getDaysInMonth(currentMonth) }).map((_, i) => {
+                const dayNum = i + 1;
+                const isSelected = date.getDate() === dayNum && date.getMonth() === currentMonth.getMonth() && date.getFullYear() === currentMonth.getFullYear();
+                return (
+                  <TouchableOpacity 
+                    key={dayNum} 
+                    style={[styles.calendarDay, isSelected && styles.calendarDaySelected]}
+                    onPress={() => {
+                      const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), dayNum);
+                      setDate(newDate);
+                      setPublishDate(newDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }));
+                      setShowDatePicker(false);
+                    }}
+                  >
+                    <Text style={[styles.calendarDayText, isSelected && styles.calendarDayTextSelected]}>{dayNum}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -124,7 +254,7 @@ export default function AdminAddNoticeScreen({ navigation }: Props) {
       <View style={styles.fabContainer}>
          <TouchableOpacity 
            style={styles.fabButton}
-           onPress={() => navigation.goBack()}
+           onPress={handlePublish}
          >
             <Text style={styles.fabText}>Publish Notice</Text>
          </TouchableOpacity>
@@ -149,6 +279,30 @@ export default function AdminAddNoticeScreen({ navigation }: Props) {
           <Text style={styles.tabLabel}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Modals removed to use inline accordion dropdowns */}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <View style={[StyleSheet.absoluteFill, { zIndex: 9999, elevation: 9999 }]}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.successIconBg}>
+                <MaterialCommunityIcons name="check" size={40} color="#10B981" />
+              </View>
+              <Text style={styles.successTitle}>{isTelugu ? 'నోటీస్ జోడించబడింది!' : 'Notice Added!'}</Text>
+              <Text style={styles.successText}>
+                {isTelugu 
+                  ? `${selectedType} రకం నోటీసు విజయవంతంగా ప్రచురించబడింది.`
+                  : `The ${selectedType} notice has been published successfully.`}
+              </Text>
+              <TouchableOpacity style={styles.doneButton} onPress={handleModalClose}>
+                <Text style={styles.doneButtonText}>{isTelugu ? 'పూర్తి' : 'Done'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
 
     </SafeAreaView>
   );
@@ -217,6 +371,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     height: 48,
   },
+  dropdownOpen: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    borderBottomWidth: 0,
+  },
+  inlineDropdownList: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    overflow: 'hidden',
+  },
+  inlineDropdownOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  dropdownOptionText: {
+    fontSize: 16,
+    color: '#374151',
+  },
   textArea: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
@@ -281,4 +462,109 @@ const styles = StyleSheet.create({
   },
   tabItem: { alignItems: 'center' },
   tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 32,
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+
+  // Custom Calendar Styles
+  calendarContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  calendarMonthText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  calendarDay: {
+    width: '14.28%', // 100% / 7
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  calendarDaySelected: {
+    backgroundColor: '#4F46E5',
+    borderRadius: 20,
+  },
+  calendarWeekDayText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#6B7280',
+  },
+  calendarDayText: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  calendarDayTextSelected: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  successIconBg: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#D1FAE5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  successTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  successText: {
+    fontSize: 15,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 22,
+  },
+  doneButton: {
+    backgroundColor: '#5B4BCA',
+    borderRadius: 12,
+    paddingVertical: 14,
+    width: '100%',
+    alignItems: 'center',
+  },
+  doneButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });

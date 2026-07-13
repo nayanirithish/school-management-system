@@ -129,6 +129,17 @@ export default function LoginScreen({ navigation }: Props) {
                   style={styles.loginButtonWrapper} 
                   activeOpacity={0.8}
                   disabled={!isFormValid}
+                  onPress={() => {
+                    if (email === 'admin@temp.com' && password === 'password123') {
+                      navigation.navigate('AdminHome');
+                    } else if (email === 'student@temp.com' && password === 'password123') {
+                      navigation.navigate('StudentHome');
+                    } else if (email === 'faculty@temp.com' && password === 'password123') {
+                      navigation.navigate('FacultyHome');
+                    } else {
+                      alert('Invalid credentials! Please use admin@temp.com, student@temp.com, or faculty@temp.com with password: password123');
+                    }
+                  }}
                 >
                   <LinearGradient
                      colors={

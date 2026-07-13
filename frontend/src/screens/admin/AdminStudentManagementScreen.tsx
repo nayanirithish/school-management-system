@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAdmin } from '../../context/AdminContext';
 
 type AdminStudentNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AdminStudentManagement'>;
 interface Props {
@@ -22,16 +23,14 @@ interface Props {
 
 export default function AdminStudentManagementScreen({ navigation }: Props) {
   const { isTelugu, setIsTelugu } = useLanguage();
-  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const { studentList, deleteStudent, toggleStudentStatus } = useAdmin();
+  const [activeModalId, setActiveModalId] = useState<number | null>(null);
 
-  const students = [
-    { id: 1, name: 'Rahul Kumar', class: 'Class 10 - A', roll: '25', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=11' },
-    { id: 2, name: 'Ananya Rao', class: 'Class 9 - B', roll: '12', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=5' },
-    { id: 3, name: 'Vikram Singh', class: 'Class 8 - A', roll: '08', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=68' },
-    { id: 4, name: 'Pooja Verma', class: 'Class 11 - C', roll: '31', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=47' },
-    { id: 5, name: 'Arjun Mehta', class: 'Class 7 - B', roll: '15', status: 'Inactive', avatar: 'https://i.pravatar.cc/150?img=12' },
-    { id: 6, name: 'Diya Sharma', class: 'Class 6 - A', roll: '05', status: 'Active', avatar: 'https://i.pravatar.cc/150?img=20' },
-  ];
+  const totalStudents = studentList.length;
+  const activeStudentsCount = studentList.filter(s => s.status === 'Active').length;
+  const inactiveStudentsCount = studentList.filter(s => s.status === 'Inactive').length;
+
+  const activeStudent = studentList.find(s => s.id === activeModalId);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -80,33 +79,33 @@ export default function AdminStudentManagementScreen({ navigation }: Props) {
         <View style={styles.statsRow}>
            <View style={[styles.statCard, { flex: 1.1 }]}>
               <Text style={styles.statLabel}>Total Students</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>1,248</Text>
+              <Text style={[styles.statValue, { color: '#111827' }]}>{totalStudents}</Text>
            </View>
            <View style={[styles.statCard, { flex: 1 }]}>
               <Text style={styles.statLabel}>Active Students</Text>
-              <Text style={[styles.statValue, { color: '#4F46E5' }]}>1,186</Text>
+              <Text style={[styles.statValue, { color: '#4F46E5' }]}>{activeStudentsCount}</Text>
            </View>
            <View style={[styles.statCard, { flex: 1 }]}>
               <Text style={styles.statLabel}>Inactive Students</Text>
-              <Text style={[styles.statValue, { color: '#111827' }]}>62</Text>
+              <Text style={[styles.statValue, { color: '#111827' }]}>{inactiveStudentsCount}</Text>
            </View>
         </View>
 
         {/* Student List */}
         <View style={styles.listContainer}>
-          {students.map((student) => (
+          {studentList.map((student) => (
             <View key={student.id} style={styles.listItem}>
                <Image source={{ uri: student.avatar }} style={styles.avatar} />
                <View style={styles.listInfo}>
                   <Text style={styles.studentName}>{student.name}</Text>
-                  <Text style={styles.studentDetails}>{student.class} | Roll No. {student.roll}</Text>
+                  <Text style={styles.studentDetails}>{student.className} | Roll No. {student.roll}</Text>
                </View>
                <View style={[styles.statusPill, student.status === 'Active' ? styles.statusActive : styles.statusInactive]}>
                   <Text style={[styles.statusText, student.status === 'Active' ? styles.statusTextActive : styles.statusTextInactive]}>
                     {student.status}
                   </Text>
                </View>
-               <TouchableOpacity style={styles.moreButton} onPress={() => setActiveModal(student.name)}>
+               <TouchableOpacity style={styles.moreButton} onPress={() => setActiveModalId(student.id)}>
                   <MaterialCommunityIcons name="dots-vertical" size={24} color="#4B5563" />
                </TouchableOpacity>
             </View>
@@ -148,26 +147,28 @@ export default function AdminStudentManagementScreen({ navigation }: Props) {
       </View>
 
       {/* Interactive Modal for Options */}
-      <Modal visible={activeModal !== null} transparent animationType="fade">
+      <Modal visible={activeModalId !== null} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-           <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setActiveModal(null)} activeOpacity={1} />
+           <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setActiveModalId(null)} activeOpacity={1} />
            <View style={styles.centerModalContent}>
-              <Text style={styles.modalTitle}>Manage {activeModal}</Text>
+              <Text style={styles.modalTitle}>Manage {activeStudent?.name}</Text>
               
-              <TouchableOpacity style={styles.settingsOption} onPress={() => { setActiveModal(null); navigation.navigate('AdminAddUpdateStudent'); }}>
+              <TouchableOpacity style={styles.settingsOption} onPress={() => { setActiveModalId(null); navigation.navigate('AdminAddUpdateStudent', { studentId: activeModalId! }); }}>
                  <MaterialCommunityIcons name="pencil-outline" size={24} color="#4F46E5" />
                  <Text style={styles.settingsOptionText}>Edit Student</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.settingsOption} onPress={() => setActiveModal(null)}>
+              <TouchableOpacity style={styles.settingsOption} onPress={() => { if(activeModalId) toggleStudentStatus(activeModalId); setActiveModalId(null); }}>
                  <MaterialCommunityIcons name="cancel" size={24} color="#F59E0B" />
-                 <Text style={styles.settingsOptionText}>Deactivate Student</Text>
+                 <Text style={styles.settingsOptionText}>
+                   {activeStudent?.status === 'Active' ? 'Deactivate Student' : 'Activate Student'}
+                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.settingsOption, { borderBottomWidth: 0, marginBottom: 12 }]} onPress={() => setActiveModal(null)}>
+              <TouchableOpacity style={[styles.settingsOption, { borderBottomWidth: 0, marginBottom: 12 }]} onPress={() => { if(activeModalId) deleteStudent(activeModalId); setActiveModalId(null); }}>
                  <MaterialCommunityIcons name="delete-outline" size={24} color="#EF4444" />
                  <Text style={[styles.settingsOptionText, { color: '#EF4444' }]}>Delete Student</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.submitButtonWrapper} onPress={() => setActiveModal(null)}>
+              <TouchableOpacity style={styles.submitButtonWrapper} onPress={() => setActiveModalId(null)}>
                 <Text style={styles.submitButtonText}>Close</Text>
               </TouchableOpacity>
            </View>

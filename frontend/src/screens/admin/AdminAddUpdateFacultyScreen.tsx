@@ -7,36 +7,101 @@ import {
   ScrollView, 
   TouchableOpacity, 
   TextInput,
-  Image
+  Image,
+  Modal,
+  FlatList
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as DocumentPicker from 'expo-document-picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAdmin, Faculty } from '../../context/AdminContext';
 
+type AdminAddUpdateFacultyRouteProp = RouteProp<RootStackParamList, 'AdminAddUpdateFaculty'>;
 type AdminAddUpdateFacultyNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AdminAddUpdateFaculty'>;
 interface Props {
   navigation: AdminAddUpdateFacultyNavigationProp;
+  route: AdminAddUpdateFacultyRouteProp;
 }
 
-export default function AdminAddUpdateFacultyScreen({ navigation }: Props) {
+export default function AdminAddUpdateFacultyScreen({ navigation, route }: Props) {
   const { isTelugu, setIsTelugu } = useLanguage();
+  const { facultyList, addFaculty, updateFaculty } = useAdmin();
+  
+  const facultyId = route.params?.facultyId;
+  const existingFaculty = facultyId ? facultyList.find(f => f.id === facultyId) : null;
 
   // Form states to make fields interactive
-  const [name, setName] = useState('Rahul Sharma');
-  const [department, setDepartment] = useState('Computer Science');
-  const [email, setEmail] = useState('rahul.s@oryol.edu');
-  const [contact, setContact] = useState('9876543210');
-  const [qualification, setQualification] = useState('M.Tech, B.Ed');
-  const [doj, setDoj] = useState('10 Aug 2018');
-  const [status, setStatus] = useState('Active');
+  const [name, setName] = useState(existingFaculty?.name || '');
+  const [department, setDepartment] = useState(existingFaculty?.dept || '');
+  const [email, setEmail] = useState(existingFaculty?.email || '');
+  const [contact, setContact] = useState(existingFaculty?.contact || '');
+  const [qualification, setQualification] = useState(existingFaculty?.qualification || '');
+  const [doj, setDoj] = useState(existingFaculty?.doj || '');
+  const [status, setStatus] = useState<'Active' | 'Inactive'>(existingFaculty?.status || 'Active');
+  const [avatar, setAvatar] = useState(existingFaculty?.avatar || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`);
+  
+  const [degreePhoto, setDegreePhoto] = useState(existingFaculty?.degreePhotoUrl || '');
+  const [interDiplomaPhoto, setInterDiplomaPhoto] = useState(existingFaculty?.interDiplomaPhotoUrl || '');
+  const [tenthPhoto, setTenthPhoto] = useState(existingFaculty?.tenthPhotoUrl || '');
+
+  const [showDeptModal, setShowDeptModal] = useState(false);
+  const departments = ['Computer Science', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'History'];
+
+  const pickDocument = async (setter: React.Dispatch<React.SetStateAction<string>>) => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['image/*'],
+        copyToCacheDirectory: true,
+      });
+      if (result.canceled === false && result.assets && result.assets.length > 0) {
+        setter(result.assets[0].uri);
+      }
+    } catch (err) {
+      console.log('Error picking document', err);
+    }
+  };
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('AdminFacultyManagement');
+    }
+  };
+
+  const handleSave = () => {
+    const facultyData: Faculty = {
+      id: existingFaculty ? existingFaculty.id : Date.now(),
+      name,
+      dept: department,
+      email,
+      contact,
+      qualification,
+      doj,
+      status,
+      avatar,
+      degreePhotoUrl: degreePhoto,
+      interDiplomaPhotoUrl: interDiplomaPhoto,
+      tenthPhotoUrl: tenthPhoto
+    };
+
+    if (existingFaculty) {
+      updateFaculty(facultyData);
+    } else {
+      addFaculty(facultyData);
+    }
+    handleBack();
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
@@ -62,9 +127,15 @@ export default function AdminAddUpdateFacultyScreen({ navigation }: Props) {
         {/* Avatar Upload */}
         <View style={styles.avatarSection}>
            <View style={styles.avatarWrapper}>
-             <Image source={{ uri: 'https://i.pravatar.cc/150?img=11' }} style={styles.avatarImage} />
-             <TouchableOpacity style={styles.cameraButton}>
+             <Image source={{ uri: avatar }} style={styles.avatarImage} />
+             <TouchableOpacity style={styles.cameraButton} onPress={() => pickDocument(setAvatar)}>
                 <MaterialCommunityIcons name="camera" size={16} color="#FFFFFF" />
+             </TouchableOpacity>
+             <TouchableOpacity 
+               style={styles.deleteAvatarButton} 
+               onPress={() => setAvatar(`https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`)}
+             >
+                <MaterialCommunityIcons name="delete" size={16} color="#FFFFFF" />
              </TouchableOpacity>
            </View>
         </View>
@@ -81,8 +152,8 @@ export default function AdminAddUpdateFacultyScreen({ navigation }: Props) {
 
         <View style={styles.formGroup}>
            <Text style={styles.label}>Department</Text>
-           <TouchableOpacity style={styles.dropdown}>
-             <Text style={styles.inputText}>{department}</Text>
+           <TouchableOpacity style={styles.dropdown} onPress={() => setShowDeptModal(true)}>
+             <Text style={styles.inputText}>{department || 'Select Department'}</Text>
              <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
            </TouchableOpacity>
         </View>
@@ -131,11 +202,44 @@ export default function AdminAddUpdateFacultyScreen({ navigation }: Props) {
            </View>
            <View style={[styles.formGroup, { flex: 1, marginLeft: 8 }]}>
              <Text style={styles.label}>Status</Text>
-             <TouchableOpacity style={styles.dropdown}>
+             <TouchableOpacity 
+               style={styles.dropdown}
+               onPress={() => setStatus(prev => prev === 'Active' ? 'Inactive' : 'Active')}
+             >
                <Text style={styles.inputText}>{status}</Text>
                <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
              </TouchableOpacity>
            </View>
+        </View>
+
+        <View style={styles.sectionDivider} />
+        <Text style={styles.sectionTitle}>Educational Qualification Documents</Text>
+
+        <View style={styles.formGroup}>
+           <Text style={styles.label}>Degree Certificate</Text>
+           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setDegreePhoto)}>
+             <MaterialCommunityIcons name={degreePhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={degreePhoto ? "#10B981" : "#6B7280"} />
+             <Text style={styles.uploadText}>{degreePhoto ? 'Degree Document Uploaded' : 'Tap to upload Photo'}</Text>
+           </TouchableOpacity>
+           {degreePhoto ? <Image source={{uri: degreePhoto}} style={styles.previewImage} /> : null}
+        </View>
+
+        <View style={styles.formGroup}>
+           <Text style={styles.label}>Inter / Diploma Certificate</Text>
+           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setInterDiplomaPhoto)}>
+             <MaterialCommunityIcons name={interDiplomaPhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={interDiplomaPhoto ? "#10B981" : "#6B7280"} />
+             <Text style={styles.uploadText}>{interDiplomaPhoto ? 'Inter/Diploma Document Uploaded' : 'Tap to upload Photo'}</Text>
+           </TouchableOpacity>
+           {interDiplomaPhoto ? <Image source={{uri: interDiplomaPhoto}} style={styles.previewImage} /> : null}
+        </View>
+
+        <View style={styles.formGroup}>
+           <Text style={styles.label}>10th Certificate</Text>
+           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setTenthPhoto)}>
+             <MaterialCommunityIcons name={tenthPhoto ? "check-circle" : "cloud-upload-outline"} size={24} color={tenthPhoto ? "#10B981" : "#6B7280"} />
+             <Text style={styles.uploadText}>{tenthPhoto ? '10th Document Uploaded' : 'Tap to upload Photo'}</Text>
+           </TouchableOpacity>
+           {tenthPhoto ? <Image source={{uri: tenthPhoto}} style={styles.previewImage} /> : null}
         </View>
 
         <View style={{ height: 100 }} />
@@ -145,7 +249,7 @@ export default function AdminAddUpdateFacultyScreen({ navigation }: Props) {
       <View style={styles.fabContainer}>
          <TouchableOpacity 
            style={styles.fabButton}
-           onPress={() => navigation.goBack()}
+           onPress={handleSave}
          >
             <Text style={styles.fabText}>Save Faculty</Text>
          </TouchableOpacity>
@@ -170,6 +274,24 @@ export default function AdminAddUpdateFacultyScreen({ navigation }: Props) {
           <Text style={styles.tabLabel}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      <Modal visible={showDeptModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+           <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowDeptModal(false)} activeOpacity={1} />
+           <View style={styles.centerModalContent}>
+              <Text style={styles.modalTitle}>Select Department</Text>
+              <FlatList 
+                data={departments}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.settingsOption} onPress={() => { setDepartment(item); setShowDeptModal(false); }}>
+                     <Text style={styles.settingsOptionText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+           </View>
+        </View>
+      </Modal>
 
     </SafeAreaView>
   );
@@ -222,6 +344,19 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     backgroundColor: '#4F46E5',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  deleteAvatarButton: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    backgroundColor: '#EF4444',
     width: 28,
     height: 28,
     borderRadius: 14,
@@ -297,4 +432,46 @@ const styles = StyleSheet.create({
   },
   tabItem: { alignItems: 'center' },
   tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  sectionDivider: { height: 1, backgroundColor: '#E5E7EB', marginVertical: 16 },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
+  uploadBox: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#D1D5DB',
+    borderRadius: 12,
+    backgroundColor: '#F9FAFB',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  uploadText: { marginLeft: 8, fontSize: 14, color: '#4B5563' },
+  previewImage: { width: '100%', height: 120, borderRadius: 8, marginTop: 8, resizeMode: 'cover' },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  centerModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 24,
+    width: '100%',
+    maxWidth: 340,
+    maxHeight: '80%',
+  },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
+  settingsOption: {
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  settingsOptionText: {
+    fontSize: 15,
+    color: '#1F2937',
+    fontWeight: '500',
+    textAlign: 'center'
+  },
 });

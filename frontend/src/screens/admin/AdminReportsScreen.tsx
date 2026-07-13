@@ -8,8 +8,6 @@ import {
   TouchableOpacity, 
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../App';
 
@@ -28,19 +26,18 @@ export default function AdminReportsScreen({ navigation }: Props) {
   ];
 
   return (
-    <LinearGradient colors={['#0f172a', '#1e293b', '#0f172a']} style={styles.background}>
-      <SafeAreaView style={styles.safeArea}>
-        
-        {/* Top App Bar */}
-        <BlurView intensity={40} tint="dark" style={styles.appBar}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="arrow-left" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
-          <Text style={styles.brandTitle}>Reports</Text>
-          <TouchableOpacity onPress={() => {}}>
-            <MaterialCommunityIcons name="filter-variant" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-        </BlurView>
+    <SafeAreaView style={styles.safeArea}>
+      
+      {/* Top App Bar */}
+      <View style={styles.appBar}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
+        </TouchableOpacity>
+        <Text style={styles.brandTitle}>Reports</Text>
+        <TouchableOpacity>
+          <MaterialCommunityIcons name="filter-variant" size={24} color="#111827" />
+        </TouchableOpacity>
+      </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           
@@ -50,14 +47,14 @@ export default function AdminReportsScreen({ navigation }: Props) {
           <View style={styles.reportsGrid}>
             {reports.map((report) => (
               <View key={report.id} style={styles.glassCardWrapper}>
-                 <BlurView intensity={20} tint="dark" style={styles.glassCard}>
+                 <View style={styles.glassCard}>
                     <View style={[styles.iconContainer, { backgroundColor: `${report.color}20` }]}>
                        <MaterialCommunityIcons name={report.icon as any} size={28} color={report.color} />
                     </View>
                     <Text style={styles.reportValue}>{report.value}</Text>
                     <Text style={styles.reportTitle}>{report.title}</Text>
                     <Text style={styles.reportSubtitle}>{report.subtitle}</Text>
-                 </BlurView>
+                 </View>
               </View>
             ))}
           </View>
@@ -65,8 +62,12 @@ export default function AdminReportsScreen({ navigation }: Props) {
           {/* Detailed Reports Section */}
           <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Detailed Analytics</Text>
           
-          <TouchableOpacity style={styles.detailedReportWrapper} activeOpacity={0.8}>
-             <BlurView intensity={20} tint="dark" style={styles.detailedReportCard}>
+          <TouchableOpacity 
+            style={styles.detailedReportWrapper} 
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('AdminResults')}
+          >
+             <View style={styles.detailedReportCard}>
                 <View style={styles.detailedReportIcon}>
                    <MaterialCommunityIcons name="chart-bar" size={24} color="#38bdf8" />
                 </View>
@@ -74,28 +75,32 @@ export default function AdminReportsScreen({ navigation }: Props) {
                    <Text style={styles.detailedReportTitle}>Academic Performance</Text>
                    <Text style={styles.detailedReportSubtitle}>View term-wise results and analytics</Text>
                 </View>
-                <MaterialCommunityIcons name="chevron-right" size={24} color="#94a3b8" />
-             </BlurView>
+                <MaterialCommunityIcons name="chevron-right" size={24} color="#9ca3af" />
+             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.detailedReportWrapper} activeOpacity={0.8}>
-             <BlurView intensity={20} tint="dark" style={styles.detailedReportCard}>
-                <View style={styles.detailedReportIcon}>
+          <TouchableOpacity 
+            style={styles.detailedReportWrapper} 
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('AdminFeeManagement')}
+          >
+             <View style={styles.detailedReportCard}>
+                <View style={[styles.detailedReportIcon, { backgroundColor: '#f43f5e15' }]}>
                    <MaterialCommunityIcons name="chart-pie" size={24} color="#f43f5e" />
                 </View>
                 <View style={{ flex: 1 }}>
                    <Text style={styles.detailedReportTitle}>Financial Overview</Text>
                    <Text style={styles.detailedReportSubtitle}>Revenue, expenses, and fee collection</Text>
                 </View>
-                <MaterialCommunityIcons name="chevron-right" size={24} color="#94a3b8" />
-             </BlurView>
+                <MaterialCommunityIcons name="chevron-right" size={24} color="#9ca3af" />
+             </View>
           </TouchableOpacity>
 
           <View style={{ height: 100 }} />
         </ScrollView>
 
-        {/* Bottom Tab Bar (Glassmorphic) */}
-        <BlurView intensity={60} tint="dark" style={styles.bottomTabBar}>
+        {/* Bottom Tab Bar */}
+        <View style={styles.bottomTabBar}>
           <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('AdminHome')}>
             <MaterialCommunityIcons name="home-outline" size={28} color="#9CA3AF" />
             <Text style={styles.tabLabel}>Home</Text>
@@ -112,30 +117,29 @@ export default function AdminReportsScreen({ navigation }: Props) {
             <MaterialCommunityIcons name="account-outline" size={28} color="#9CA3AF" />
             <Text style={styles.tabLabel}>Profile</Text>
           </TouchableOpacity>
-        </BlurView>
+        </View>
 
       </SafeAreaView>
-    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  background: { flex: 1 },
-  safeArea: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
+  safeArea: { flex: 1, backgroundColor: '#F9FAFB' },
   
   appBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: '#F3F4F6',
   },
-  brandTitle: { fontSize: 18, fontWeight: '700', color: '#FFFFFF' },
+  backButton: { marginRight: 16 },
+  brandTitle: { fontSize: 22, fontWeight: '900', color: '#4F46E5', flex: 1, letterSpacing: 0.5 },
 
-  scrollContent: { paddingHorizontal: 20, paddingTop: 24 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 16 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 20 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16 },
 
   reportsGrid: {
     flexDirection: 'row',
@@ -145,14 +149,18 @@ const styles = StyleSheet.create({
   glassCardWrapper: {
     width: '48%',
     borderRadius: 20,
-    overflow: 'hidden',
     marginBottom: 16,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
+    borderColor: '#F3F4F6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   glassCard: {
     padding: 16,
-    backgroundColor: 'rgba(255,255,255,0.05)',
   },
   iconContainer: {
     width: 48,
@@ -163,15 +171,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   reportValue: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#111827',
     marginBottom: 4,
   },
   reportTitle: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#D1D5DB',
+    color: '#4B5563',
   },
   reportSubtitle: {
     fontSize: 11,
@@ -181,22 +189,26 @@ const styles = StyleSheet.create({
 
   detailedReportWrapper: {
     borderRadius: 16,
-    overflow: 'hidden',
     marginBottom: 12,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
+    borderColor: '#F3F4F6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   detailedReportCard: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'rgba(255,255,255,0.05)',
   },
   detailedReportIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#e0f2fe',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -204,28 +216,26 @@ const styles = StyleSheet.create({
   detailedReportTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#111827',
     marginBottom: 4,
   },
   detailedReportSubtitle: {
     fontSize: 13,
-    color: '#94a3b8',
+    color: '#6B7280',
   },
 
   bottomTabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
+    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderTopColor: '#F3F4F6',
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    maxWidth: 480,
-    alignSelf: 'center',
-    zIndex: 5,
   },
   tabItem: { alignItems: 'center' },
-  tabLabel: { fontSize: 11, color: '#9CA3AF', marginTop: 4, fontWeight: '500' },
+  tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
 });

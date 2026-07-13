@@ -7,36 +7,109 @@ import {
   ScrollView, 
   TouchableOpacity, 
   TextInput,
-  Image
+  Image,
+  Modal,
+  FlatList
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as DocumentPicker from 'expo-document-picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../../App';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAdmin, Student } from '../../context/AdminContext';
 
+type AdminAddUpdateStudentRouteProp = RouteProp<RootStackParamList, 'AdminAddUpdateStudent'>;
 type AdminAddUpdateStudentNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AdminAddUpdateStudent'>;
 interface Props {
   navigation: AdminAddUpdateStudentNavigationProp;
+  route: AdminAddUpdateStudentRouteProp;
 }
 
-export default function AdminAddUpdateStudentScreen({ navigation }: Props) {
+export default function AdminAddUpdateStudentScreen({ navigation, route }: Props) {
   const { isTelugu, setIsTelugu } = useLanguage();
+  const { studentList, addStudent, updateStudent } = useAdmin();
+  
+  const studentId = route.params?.studentId;
+  const existingStudent = studentId ? studentList.find(s => s.id === studentId) : null;
 
   // Form states to make fields interactive
-  const [name, setName] = useState('Rahul Kumar');
-  const [className, setClassName] = useState('10 - A');
-  const [roll, setRoll] = useState('25');
-  const [dob, setDob] = useState('12 May 2009');
-  const [gender, setGender] = useState('Male');
-  const [contact, setContact] = useState('9876543210');
-  const [address, setAddress] = useState('Hyderabad, Telangana');
+  const [name, setName] = useState(existingStudent?.name || '');
+  const [className, setClassName] = useState(existingStudent?.className || '');
+  const [roll, setRoll] = useState(existingStudent?.roll || '');
+  const [dob, setDob] = useState(existingStudent?.dob || '');
+  const [gender, setGender] = useState(existingStudent?.gender || 'Male');
+  const [contact, setContact] = useState(existingStudent?.contact || '');
+  const [address, setAddress] = useState(existingStudent?.address || '');
+  const [avatar, setAvatar] = useState(existingStudent?.avatar || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`);
+  
+  const [tuitionFee, setTuitionFee] = useState(existingStudent?.tuitionFee || '15000');
+  const [transportFee, setTransportFee] = useState(existingStudent?.transportFee || '5000');
+  const [libraryFee, setLibraryFee] = useState(existingStudent?.libraryFee || '2000');
+  
+  const [aadhar, setAadhar] = useState(existingStudent?.aadharUrl || '');
+  const [tc, setTc] = useState(existingStudent?.tcUrl || '');
+  const [studyCert, setStudyCert] = useState(existingStudent?.studyCertUrl || '');
+  
+  const [showClassModal, setShowClassModal] = useState(false);
+  const classes = ['Class 6 - A', 'Class 7 - B', 'Class 8 - A', 'Class 9 - B', 'Class 10 - A', 'Class 11 - C'];
+
+  const pickDocument = async (setter: React.Dispatch<React.SetStateAction<string>>) => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['image/*'],
+        copyToCacheDirectory: true,
+      });
+      if (result.canceled === false && result.assets && result.assets.length > 0) {
+        setter(result.assets[0].uri);
+      }
+    } catch (err) {
+      console.log('Error picking document', err);
+    }
+  };
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('AdminStudentManagement');
+    }
+  };
+
+  const handleSave = () => {
+    const studentData: Student = {
+      id: existingStudent ? existingStudent.id : Date.now(),
+      name,
+      className,
+      roll,
+      dob,
+      gender,
+      contact,
+      address,
+      status: existingStudent?.status || 'Active',
+      avatar,
+      tuitionFee,
+      transportFee,
+      libraryFee,
+      aadharUrl: aadhar,
+      tcUrl: tc,
+      studyCertUrl: studyCert
+    };
+
+    if (existingStudent) {
+      updateStudent(studentData);
+    } else {
+      addStudent(studentData);
+    }
+    handleBack();
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       
       {/* Top App Bar */}
       <View style={styles.appBar}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <MaterialCommunityIcons name="arrow-left" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.brandTitle}>ORYOL</Text>
@@ -62,9 +135,15 @@ export default function AdminAddUpdateStudentScreen({ navigation }: Props) {
         {/* Avatar Upload */}
         <View style={styles.avatarSection}>
            <View style={styles.avatarWrapper}>
-             <Image source={{ uri: 'https://i.pravatar.cc/150?img=11' }} style={styles.avatarImage} />
-             <TouchableOpacity style={styles.cameraButton}>
+             <Image source={{ uri: avatar }} style={styles.avatarImage} />
+             <TouchableOpacity style={styles.cameraButton} onPress={() => pickDocument(setAvatar)}>
                 <MaterialCommunityIcons name="camera" size={16} color="#FFFFFF" />
+             </TouchableOpacity>
+             <TouchableOpacity 
+               style={styles.deleteAvatarButton} 
+               onPress={() => setAvatar(`https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`)}
+             >
+                <MaterialCommunityIcons name="delete" size={16} color="#FFFFFF" />
              </TouchableOpacity>
            </View>
         </View>
@@ -82,8 +161,8 @@ export default function AdminAddUpdateStudentScreen({ navigation }: Props) {
         <View style={styles.row}>
            <View style={[styles.formGroup, { flex: 1, marginRight: 8 }]}>
              <Text style={styles.label}>Class</Text>
-             <TouchableOpacity style={styles.dropdown}>
-               <Text style={styles.inputText}>{className}</Text>
+             <TouchableOpacity style={styles.dropdown} onPress={() => setShowClassModal(true)}>
+               <Text style={styles.inputText}>{className || 'Select Class'}</Text>
                <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
              </TouchableOpacity>
            </View>
@@ -112,7 +191,10 @@ export default function AdminAddUpdateStudentScreen({ navigation }: Props) {
            </View>
            <View style={[styles.formGroup, { flex: 1, marginLeft: 8 }]}>
              <Text style={styles.label}>Gender</Text>
-             <TouchableOpacity style={styles.dropdown}>
+             <TouchableOpacity 
+               style={styles.dropdown} 
+               onPress={() => setGender(prev => prev === 'Male' ? 'Female' : 'Male')}
+             >
                <Text style={styles.inputText}>{gender}</Text>
                <MaterialCommunityIcons name="chevron-down" size={20} color="#111827" />
              </TouchableOpacity>
@@ -141,20 +223,67 @@ export default function AdminAddUpdateStudentScreen({ navigation }: Props) {
         {/* Fee Information Box */}
         <View style={styles.feeInfoCard}>
            <Text style={styles.feeInfoTitle}>Fee Information</Text>
-           <View style={styles.feeInfoRow}>
-              <View style={styles.feeBox}>
-                 <Text style={styles.feeLabel}>Total Annual Fees</Text>
-                 <Text style={[styles.feeValue, { color: '#111827' }]}>₹ 25,000</Text>
-              </View>
-              <View style={styles.feeBox}>
-                 <Text style={styles.feeLabel}>Paid Amount</Text>
-                 <Text style={[styles.feeValue, { color: '#10B981' }]}>₹ 15,000</Text>
-              </View>
-              <View style={styles.feeBox}>
-                 <Text style={styles.feeLabel}>Due Amount</Text>
-                 <Text style={[styles.feeValue, { color: '#EF4444' }]}>₹ 10,000</Text>
-              </View>
+           
+           <View style={styles.formGroup}>
+             <Text style={styles.label}>Tuition Fee (₹)</Text>
+             <TextInput 
+               style={styles.input} 
+               value={tuitionFee} 
+               onChangeText={setTuitionFee} 
+               keyboardType="number-pad"
+             />
            </View>
+
+           <View style={styles.row}>
+             <View style={[styles.formGroup, { flex: 1, marginRight: 8 }]}>
+               <Text style={styles.label}>Transport Fee (₹)</Text>
+               <TextInput 
+                 style={styles.input} 
+                 value={transportFee} 
+                 onChangeText={setTransportFee} 
+                 keyboardType="number-pad"
+               />
+             </View>
+             <View style={[styles.formGroup, { flex: 1, marginLeft: 8 }]}>
+               <Text style={styles.label}>Library Fee (₹)</Text>
+               <TextInput 
+                 style={styles.input} 
+                 value={libraryFee} 
+                 onChangeText={setLibraryFee} 
+                 keyboardType="number-pad"
+               />
+             </View>
+           </View>
+        </View>
+
+        <View style={styles.sectionDivider} />
+        <Text style={styles.sectionTitle}>Document Uploads</Text>
+
+        <View style={styles.formGroup}>
+           <Text style={styles.label}>Aadhar Card</Text>
+           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setAadhar)}>
+             <MaterialCommunityIcons name={aadhar ? "check-circle" : "cloud-upload-outline"} size={24} color={aadhar ? "#10B981" : "#6B7280"} />
+             <Text style={styles.uploadText}>{aadhar ? 'Aadhar Card Uploaded' : 'Tap to upload Aadhar'}</Text>
+           </TouchableOpacity>
+           {aadhar ? <Image source={{uri: aadhar}} style={styles.previewImage} /> : null}
+        </View>
+
+        <View style={styles.formGroup}>
+           <Text style={styles.label}>Transfer Certificate (TC)</Text>
+           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setTc)}>
+             <MaterialCommunityIcons name={tc ? "check-circle" : "cloud-upload-outline"} size={24} color={tc ? "#10B981" : "#6B7280"} />
+             <Text style={styles.uploadText}>{tc ? 'TC Uploaded' : 'Tap to upload TC'}</Text>
+           </TouchableOpacity>
+           {tc ? <Image source={{uri: tc}} style={styles.previewImage} /> : null}
+        </View>
+
+        <View style={styles.formGroup}>
+           <Text style={styles.label}>Study Certificate</Text>
+           <TouchableOpacity style={styles.uploadBox} onPress={() => pickDocument(setStudyCert)}>
+             <MaterialCommunityIcons name={studyCert ? "check-circle" : "cloud-upload-outline"} size={24} color={studyCert ? "#10B981" : "#6B7280"} />
+             <Text style={styles.uploadText}>{studyCert ? 'Study Certificate Uploaded' : 'Tap to upload Study Certificate'}</Text>
+           </TouchableOpacity>
+           {studyCert ? <Image source={{uri: studyCert}} style={styles.previewImage} /> : null}
         </View>
 
         <View style={{ height: 100 }} />
@@ -164,9 +293,9 @@ export default function AdminAddUpdateStudentScreen({ navigation }: Props) {
       <View style={styles.fabContainer}>
          <TouchableOpacity 
            style={styles.fabButton}
-           onPress={() => navigation.goBack()}
+           onPress={handleSave}
          >
-            <Text style={styles.fabText}>Update Student</Text>
+            <Text style={styles.fabText}>Save Student</Text>
          </TouchableOpacity>
       </View>
 
@@ -189,6 +318,24 @@ export default function AdminAddUpdateStudentScreen({ navigation }: Props) {
           <Text style={styles.tabLabel}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      <Modal visible={showClassModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+           <TouchableOpacity style={StyleSheet.absoluteFill} onPress={() => setShowClassModal(false)} activeOpacity={1} />
+           <View style={styles.centerModalContent}>
+              <Text style={styles.modalTitle}>Select Class</Text>
+              <FlatList 
+                data={classes}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.settingsOption} onPress={() => { setClassName(item); setShowClassModal(false); }}>
+                     <Text style={styles.settingsOptionText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+           </View>
+        </View>
+      </Modal>
 
     </SafeAreaView>
   );
@@ -241,6 +388,19 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     backgroundColor: '#4F46E5',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  deleteAvatarButton: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    backgroundColor: '#EF4444',
     width: 28,
     height: 28,
     borderRadius: 14,
@@ -335,4 +495,31 @@ const styles = StyleSheet.create({
   },
   tabItem: { alignItems: 'center' },
   tabLabel: { fontSize: 10, color: '#9CA3AF', marginTop: 4, fontWeight: '500', textAlign: 'center' },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  centerModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 24,
+    width: '100%',
+    maxWidth: 340,
+    maxHeight: '80%',
+  },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827', marginBottom: 16, textAlign: 'center' },
+  settingsOption: {
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  settingsOptionText: {
+    fontSize: 15,
+    color: '#1F2937',
+    fontWeight: '500',
+    textAlign: 'center'
+  },
 });

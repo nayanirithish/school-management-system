@@ -51,6 +51,8 @@ import AdminStudentManagementScreen from './src/screens/admin/AdminStudentManage
 import AdminAddUpdateStudentScreen from './src/screens/admin/AdminAddUpdateStudentScreen';
 import AdminFacultyManagementScreen from './src/screens/admin/AdminFacultyManagementScreen';
 import AdminAddUpdateFacultyScreen from './src/screens/admin/AdminAddUpdateFacultyScreen';
+import AdminClassTeachersScreen from './src/screens/admin/AdminClassTeachersScreen';
+import AdminUploadResultsScreen from './src/screens/admin/AdminUploadResultsScreen';
 import AdminAddNoticeScreen from './src/screens/admin/AdminAddNoticeScreen';
 import AdminNoticesScreen from './src/screens/admin/AdminNoticesScreen';
 import AdminProfileScreen from './src/screens/admin/AdminProfileScreen';
@@ -100,9 +102,11 @@ export type RootStackParamList = {
   AdminUpdateFeeDetails: undefined;
   AdminCollectFee: undefined;
   AdminStudentManagement: undefined;
-  AdminAddUpdateStudent: undefined;
+  AdminAddUpdateStudent: { studentId?: number } | undefined;
   AdminFacultyManagement: undefined;
-  AdminAddUpdateFaculty: undefined;
+  AdminAddUpdateFaculty: { facultyId?: number } | undefined;
+  AdminClassTeachers: undefined;
+  AdminUploadResults: undefined;
   AdminAddNotice: undefined;
   AdminNotices: undefined;
   AdminProfile: undefined;
@@ -236,6 +240,10 @@ export default function App() {
               <Stack.Screen name="AdminAddUpdateStudent" component={AdminAddUpdateStudentScreen} />
               <Stack.Screen name="AdminFacultyManagement" component={AdminFacultyManagementScreen} />
               <Stack.Screen name="AdminAddUpdateFaculty" component={AdminAddUpdateFacultyScreen} />
+              <Stack.Screen name="AdminClassTeachers" component={AdminClassTeachersScreen} />
+              <Stack.Screen name="AdminUploadResults" component={AdminUploadResultsScreen} />
+              
+              {/* Faculty Routes */}
               <Stack.Screen name="AdminAddNotice" component={AdminAddNoticeScreen} />
               <Stack.Screen name="AdminNotices" component={AdminNoticesScreen} />
               <Stack.Screen name="AdminProfile" component={AdminProfileScreen} />
